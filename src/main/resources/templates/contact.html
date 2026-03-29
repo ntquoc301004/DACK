@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Liên hệ · ComicStore')}">
+<section class="contact-page sf-wide">
+    <div class="contact-grid">
+        <div class="contact-aside">
+            <h1 class="contact-h1">Liên hệ với chúng tôi</h1>
+            <p class="contact-intro">
+                Bạn có thắc mắc? Bạn có thể tìm thấy câu trả lời trong mục
+                <a href="#faq" class="contact-inline-link">Câu hỏi thường gặp</a>.
+                Hoặc bạn cũng có thể liên hệ trực tiếp với chúng tôi.
+            </p>
+
+            <ul class="contact-info-list">
+                <li class="contact-info-item">
+                    <span class="contact-ico contact-ico-home" aria-hidden="true">⌂</span>
+                    <div>
+                        <strong>Địa chỉ</strong>
+                        <p>70 Lữ Gia, Phường 15, Quận 11, TP. Hồ Chí Minh</p>
+                    </div>
+                </li>
+                <li class="contact-info-item">
+                    <span class="contact-ico" aria-hidden="true">☎</span>
+                    <div>
+                        <strong>Điện thoại</strong>
+                        <p><a href="tel:19001234">1900 1234</a></p>
+                    </div>
+                </li>
+                <li class="contact-info-item">
+                    <span class="contact-ico" aria-hidden="true">✉</span>
+                    <div>
+                        <strong>Email</strong>
+                        <p><a href="mailto:support@comicstore.vn">support@comicstore.vn</a></p>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="contact-social">
+                <strong>Theo dõi chúng tôi</strong>
+                <div class="contact-social-row">
+                    <a class="contact-soc fb" href="#" title="Facebook" aria-label="Facebook">f</a>
+                    <a class="contact-soc tw" href="#" title="Twitter" aria-label="Twitter">𝕏</a>
+                    <a class="contact-soc yt" href="#" title="YouTube" aria-label="YouTube">▶</a>
+                    <a class="contact-soc ig" href="#" title="Instagram" aria-label="Instagram">◎</a>
+                </div>
+            </div>
+
+            <div id="faq" class="contact-faq">
+                <h2 class="contact-faq-title">Câu hỏi thường gặp</h2>
+                <p class="muted">Thời gian giao hàng ước tính 3–5 ngày làm việc. Đơn từ 200.000 ₫ được miễn phí vận chuyển (minh họa).</p>
+            </div>
+        </div>
+
+        <div class="contact-form-wrap">
+            <h2 class="contact-h2">Bạn cần hỗ trợ? Hãy gửi thông tin cho chúng tôi</h2>
+            <p class="contact-intro">
+                Chúng tôi rất sẵn lòng trả lời bất kỳ câu hỏi, thắc mắc nào của bạn.
+                Chỉ cần gửi tin nhắn trong mẫu dưới đây — nội dung sẽ được chuyển tới email quản trị cửa hàng.
+            </p>
+
+            <form class="contact-form" th:action="@{/contact}" th:object="${contactForm}" method="post">
+                <label class="contact-field">
+                    <span class="contact-label">Họ và tên <span class="req">*</span></span>
+                    <input type="text" th:field="*{fullName}" placeholder="Nhập họ và tên" autocomplete="name"/>
+                    <small class="contact-err" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+                </label>
+                <label class="contact-field">
+                    <span class="contact-label">Email <span class="req">*</span></span>
+                    <input type="email" th:field="*{email}" placeholder="Nhập địa chỉ email" autocomplete="email"/>
+                    <small class="contact-err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                </label>
+                <label class="contact-field">
+                    <span class="contact-label">Điện thoại <span class="req">*</span></span>
+                    <input type="text" th:field="*{phone}" placeholder="Nhập số điện thoại" autocomplete="tel"/>
+                    <small class="contact-err" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+                </label>
+                <label class="contact-field">
+                    <span class="contact-label">Nội dung <span class="req">*</span></span>
+                    <textarea th:field="*{message}" rows="6" placeholder="Nội dung liên hệ"></textarea>
+                    <small class="contact-err" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
+                </label>
+                <button type="submit" class="contact-submit">Gửi tin nhắn</button>
+            </form>
+        </div>
+    </div>
+</section>
+</html>

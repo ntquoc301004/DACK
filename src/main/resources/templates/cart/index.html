@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Giỏ hàng')}">
+<section>
+    <h1 class="page-title">Giỏ hàng của bạn</h1>
+
+    <div th:if="${#lists.isEmpty(items)}" class="empty">
+        Giỏ hàng đang trống. <a th:href="@{/home}">Tiếp tục mua sắm</a>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(items)}" class="table">
+        <div class="row header">
+            <div>Sách</div>
+            <div class="right">Đơn giá</div>
+            <div class="right">SL</div>
+            <div class="right">Thành tiền</div>
+            <div></div>
+        </div>
+        <div class="row" th:each="i : ${items}">
+            <div>
+                <div class="strong" th:text="${i.title}">Tiêu đề</div>
+                <div class="muted" th:text="${i.author}">Tác giả</div>
+            </div>
+            <div class="right" th:text="${#numbers.formatDecimal(i.unitPrice,1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
+            <div class="right">
+                <form th:action="@{'/cart/update/' + ${i.bookId}}" method="post" class="inline">
+                    <input class="qty" type="number" name="qty" min="0" th:value="${i.quantity}"/>
+                    <button class="btn-with-icon" type="submit"><span class="btn-ico">↻</span><span>Cập nhật</span></button>
+                </form>
+            </div>
+            <div class="right" th:text="${#numbers.formatDecimal(i.lineTotal(),1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
+            <div class="right">
+                <form th:action="@{'/cart/remove/' + ${i.bookId}}" method="post">
+                    <button class="danger btn-with-icon" type="submit"><span class="btn-ico">✕</span><span>Xóa</span></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row footer">
+            <div></div><div></div><div class="right strong">Tổng cộng</div>
+            <div class="right strong" th:text="${#numbers.formatDecimal(total,1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
+            <div></div>
+        </div>
+    </div>
+
+    <div class="actions-bar" th:if="${!#lists.isEmpty(items)}">
+        <form th:action="@{/cart/clear}" method="post">
+            <button class="danger btn-with-icon" type="submit"><span class="btn-ico">🗑</span><span>Xóa giỏ hàng</span></button>
+        </form>
+        <a class="primary btn-with-icon" th:href="@{/checkout}"><span class="btn-ico">💳</span><span>Tiến hành thanh toán</span></a>
+    </div>
+</section>
+</html>
+

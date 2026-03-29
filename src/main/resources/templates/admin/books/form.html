@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: adminLayout(~{:: main}, ~{:: scripts})}">
+<body>
+<main th:fragment="main" class="admin-book-form-page">
+    <div class="admin-card admin-book-form-card">
+        <div class="admin-books-toolbar admin-form-head">
+            <div>
+                <h2 class="admin-books-title" th:text="${book.id == null ? 'Thêm sách mới' : 'Chỉnh sửa sách'}">Sách</h2>
+                <p class="admin-books-sub muted">Điền thông tin và lưu để cập nhật catalog</p>
+            </div>
+            <a class="admin-btn-ghost" th:href="@{/admin/books}">← Danh sách</a>
+        </div>
+
+        <form class="admin-form" th:action="${book.id == null} ? @{/admin/books} : @{'/admin/books/' + ${book.id}}"
+              th:object="${book}" method="post">
+            <div class="admin-form-grid">
+                <label>
+                    <span>Tên sách</span>
+                    <input type="text" th:field="*{title}" required/>
+                    <small class="admin-field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
+                </label>
+                <label>
+                    <span>Tác giả</span>
+                    <input type="text" th:field="*{author}" required/>
+                    <small class="admin-field-error" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></small>
+                </label>
+                <label>
+                    <span>Giá (VNĐ)</span>
+                    <input type="number" step="1" min="0" max="9999999999" inputmode="numeric"
+                           th:field="*{price}" placeholder="Ví dụ: 85000 hoặc 125500" required/>
+                    <small class="muted" style="font-weight:400;">Nhập đúng số tiền bằng đồng (số nguyên), không dùng dấu . hay , phân cách hàng nghìn.</small>
+                    <small class="admin-field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></small>
+                </label>
+                <label>
+                    <span>Số lượng tồn kho</span>
+                    <input type="number" min="0" th:field="*{quantity}" required/>
+                    <small class="admin-field-error" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></small>
+                </label>
+                <label class="admin-form-span2">
+                    <span>Đường dẫn ảnh</span>
+                    <input type="text" th:field="*{image}" placeholder="https://..."/>
+                </label>
+                <label>
+                    <span>Danh mục</span>
+                    <select th:field="*{category.id}" required>
+                        <option value="" disabled th:selected="${book.category == null}">Chọn danh mục</option>
+                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Danh mục</option>
+                    </select>
+                    <small class="admin-field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></small>
+                </label>
+                <label class="admin-form-span2">
+                    <span>Mô tả</span>
+                    <textarea th:field="*{description}" rows="5"></textarea>
+                </label>
+            </div>
+
+            <div class="admin-form-actions">
+                <a class="admin-btn-ghost" th:href="@{/admin/books}">Hủy</a>
+                <button class="admin-btn-primary" type="submit" th:text="${book.id == null ? 'Tạo mới' : 'Lưu thay đổi'}">Lưu</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<th:block th:fragment="scripts"></th:block>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="authLayout(content, title)">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} ?: 'ComicStore'">ComicStore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+    <link rel="stylesheet" th:href="@{/css/auth-split.css}"/>
+</head>
+<body class="auth-body">
+<header class="auth-header">
+    <a class="auth-brand" th:href="@{/home}"><span class="auth-brand-dot"></span> ComicStore</a>
+    <a class="auth-header-link" th:href="@{/home}">← Về cửa hàng</a>
+</header>
+<main class="auth-main">
+    <div class="flash auth-flash" th:if="${flash}" th:text="${flash}"></div>
+    <section th:replace="${content}"></section>
+</main>
+</body>
+</html>

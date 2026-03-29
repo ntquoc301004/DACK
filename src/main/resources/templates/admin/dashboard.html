@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: adminLayout(~{:: main}, ~{:: scripts})}">
+<body>
+<main th:fragment="main" class="admin-dashboard-page">
+    <div class="admin-kpi-grid">
+        <div class="admin-kpi">
+            <div class="admin-kpi-icon kpi-blue">📚</div>
+            <div class="admin-kpi-body">
+                <span class="admin-kpi-label">Đầu sách trong kho</span>
+                <span class="admin-kpi-value" th:text="${stats.booksTotal}">0</span>
+                <span class="admin-kpi-trend muted">Quản lý tại mục Sách</span>
+            </div>
+        </div>
+        <div class="admin-kpi">
+            <div class="admin-kpi-icon kpi-purple">📦</div>
+            <div class="admin-kpi-body">
+                <span class="admin-kpi-label">Sách bán hôm nay</span>
+                <span class="admin-kpi-value" th:text="${stats.soldTodayQuantity} + ' cuốn'">0 cuốn</span>
+                <span class="admin-kpi-trend" th:classappend="${stats.soldTodayQuantity > 0} ? ' up' : ' muted'"
+                      th:text="${stats.soldTodayQuantity > 0} ? 'Đã ghi nhận' : 'Chưa có'">—</span>
+            </div>
+        </div>
+        <div class="admin-kpi">
+            <div class="admin-kpi-icon kpi-gold">💰</div>
+            <div class="admin-kpi-body">
+                <span class="admin-kpi-label">Doanh thu hôm nay</span>
+                <span class="admin-kpi-value" th:text="${#numbers.formatDecimal(stats.revenueToday, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                <span class="admin-kpi-trend up" th:if="${stats.revenueToday > 0}">Thanh toán hoàn tất</span>
+            </div>
+        </div>
+        <div class="admin-kpi">
+            <div class="admin-kpi-icon kpi-pink">📈</div>
+            <div class="admin-kpi-body">
+                <span class="admin-kpi-label">Tổng doanh thu</span>
+                <span class="admin-kpi-value" th:text="${#numbers.formatDecimal(stats.revenueAllTime, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                <span class="admin-kpi-trend"
+                      th:if="${stats.revenueWeekOverWeekPercent() != null}"
+                      th:classappend="${stats.revenueWeekOverWeekPercent() >= 0} ? ' up' : ' down'"
+                      th:text="'So với 7 ngày trước: ' + ${stats.revenueWeekOverWeekPercent()} + '% ' + (${stats.revenueWeekOverWeekPercent() >= 0} ? '↑' : '↓')">
+                    —
+                </span>
+            </div>
+        </div>
+        <div class="admin-kpi">
+            <div class="admin-kpi-icon kpi-violet">👥</div>
+            <div class="admin-kpi-body">
+                <span class="admin-kpi-label">Khách hàng</span>
+                <span class="admin-kpi-value" th:text="${stats.customersTotal}">0</span>
+                <span class="admin-kpi-trend muted">Tài khoản CUSTOMER</span>
+            </div>
+        </div>
+        <div class="admin-kpi">
+            <div class="admin-kpi-icon kpi-teal">🛒</div>
+            <div class="admin-kpi-body">
+                <span class="admin-kpi-label">Đơn hàng hôm nay</span>
+                <span class="admin-kpi-value" th:text="${stats.ordersToday}">0</span>
+                <span class="admin-kpi-trend muted"
+                      th:text="'Chờ TT: ' + ${stats.ordersPending} + ' · Đã TT: ' + ${stats.ordersPaid} + ' · Đã duyệt: ' + ${stats.ordersApproved}">—</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-charts-row">
+        <div class="admin-card admin-card-chart">
+            <div class="admin-card-head">
+                <h2>Tổng quan doanh thu</h2>
+                <span class="admin-card-sub">7 ngày gần nhất · Đơn vị: VNĐ</span>
+            </div>
+            <div class="admin-chart-wrap">
+                <canvas id="chartRevenue"></canvas>
+            </div>
+        </div>
+        <div class="admin-card admin-card-chart">
+            <div class="admin-card-head">
+                <h2>Số đơn theo ngày</h2>
+                <span class="admin-card-sub">Tất cả trạng thái</span>
+            </div>
+            <div class="admin-chart-wrap">
+                <canvas id="chartOrders"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-card admin-card-wide">
+        <div class="admin-card-head">
+            <h2>Doanh thu tháng này</h2>
+            <span class="admin-card-sub" th:text="${#numbers.formatDecimal(stats.revenueThisMonth, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+        </div>
+        <div class="admin-income-bar">
+            <div class="admin-income-fill" th:style="|width: ${stats.monthSharePercent}%|"></div>
+        </div>
+        <p class="muted small">Tỷ lệ so với tổng doanh thu tích lũy (minh họa).</p>
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const labels = /*[[${stats.chartLabels}]]*/ [];
+    const revData = /*[[${stats.chartRevenuePaid}]]*/ [];
+    const ordData = /*[[${stats.chartOrdersCount}]]*/ [];
+    const chartFont = "'Segoe UI', system-ui, sans-serif";
+
+    new Chart(document.getElementById('chartRevenue'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: revData,
+                backgroundColor: 'rgba(99, 102, 241, 0.75)',
+                borderRadius: 8,
+                maxBarThickness: 36
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function (ctx) {
+                            return ctx.parsed.y.toLocaleString('vi-VN') + ' đ';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { family: chartFont } } },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { family: chartFont },
+                        callback: function (v) { return v.toLocaleString('vi-VN'); }
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('chartOrders'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Số đơn',
+                data: ordData,
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                fill: true,
+                tension: 0.35
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+    /*]]>*/
+</script>
+</th:block>
+</body>
+</html>

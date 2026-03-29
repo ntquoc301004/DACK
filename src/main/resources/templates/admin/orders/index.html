@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: adminLayout(~{:: main}, ~{:: scripts})}">
+<body>
+<main th:fragment="main" class="admin-books-page">
+    <div class="admin-flash success" th:if="${flash}" th:text="${flash}"></div>
+
+    <div class="admin-card admin-books-toolbar">
+        <div>
+            <h2 class="admin-books-title">Đơn hàng</h2>
+            <p class="admin-books-sub muted">Theo dõi trạng thái và tổng tiền</p>
+        </div>
+        <form class="admin-inline-filter" th:action="@{/admin/orders}" method="get" style="display:flex;gap:10px;align-items:center;">
+            <label class="muted" style="font-size:14px;">Lọc:</label>
+            <select name="status" onchange="this.form.submit()" style="padding:10px 12px;border-radius:10px;border:1px solid #e2e8f0;">
+                <option value="" th:selected="${statusFilter == null}">Tất cả</option>
+                <option th:each="s : ${orderStatuses}" th:value="${s.name()}"
+                        th:selected="${statusFilter != null and statusFilter.name() == s.name()}"
+                        th:text="${s.name() == 'PENDING'} ? 'Chờ thanh toán' : (${s.name() == 'PAID'} ? 'Đã thanh toán' : (${s.name() == 'APPROVED'} ? 'Đã duyệt' : 'Đã hủy'))">—</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="admin-card admin-table-card">
+        <div class="admin-table-wrap">
+            <table class="admin-data-table">
+                <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Khách</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th class="num">Tổng tiền</th>
+                    <th class="actions">Chi tiết</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders.content}">
+                    <td th:text="${o.id}">1</td>
+                    <td th:text="${o.user.username}">user</td>
+                    <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}">—</td>
+                    <td>
+                        <span th:if="${o.status.name() == 'PENDING'}" class="admin-status-pill st-pending">Chờ thanh toán</span>
+                        <span th:if="${o.status.name() == 'PAID'}" class="admin-status-pill st-paid">Đã thanh toán</span>
+                        <span th:if="${o.status.name() == 'APPROVED'}" class="admin-status-pill st-approved">Đã duyệt</span>
+                        <span th:if="${o.status.name() == 'CANCELLED'}" class="admin-status-pill st-cancel">Đã hủy</span>
+                    </td>
+                    <td class="num" th:text="${#numbers.formatDecimal(o.totalPrice, 1, 'POINT', 0, 'COMMA')} + ' đ'">0</td>
+                    <td class="actions">
+                        <a class="admin-link-edit" th:href="@{'/admin/orders/' + ${o.id}}">Xem</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="admin-pagination" th:if="${orders.totalPages > 1}">
+            <a th:classappend="${orders.first} ? ' disabled'"
+               th:href="@{/admin/orders(page=${orders.number - 1}, status=${statusFilter != null ? statusFilter.name() : ''})}">Trước</a>
+            <span th:text="'Trang ' + (${orders.number} + 1) + ' / ' + ${orders.totalPages}">Trang</span>
+            <a th:classappend="${orders.last} ? ' disabled'"
+               th:href="@{/admin/orders(page=${orders.number + 1}, status=${statusFilter != null ? statusFilter.name() : ''})}">Sau</a>
+        </div>
+    </div>
+</main>
+<th:block th:fragment="scripts"></th:block>
+</body>
+</html>

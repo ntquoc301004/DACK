@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(content, title)">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} ?: 'ComicStore'">ComicStore</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+    <link rel="stylesheet" th:href="@{/css/storefront.css}"/>
+    <link rel="stylesheet" th:href="@{/css/account-dashboard.css}"/>
+</head>
+<body class="sf-store" th:classappend="${homePage} ? ' sf-home'">
+<header class="sf-header-wrap">
+    <div class="sf-topbar">
+        <div class="sf-wide sf-topbar-inner">
+            <a class="sf-logo" th:href="@{/home}">
+                <span class="sf-logo-mark">⚡</span>
+                <span>ComicStore</span>
+            </a>
+            <nav class="sf-topnav">
+                <a th:href="@{/home}">Trang chủ</a>
+                <a href="#gioi-thieu">Giới thiệu</a>
+                <div class="sf-dd">
+                    <button type="button" class="sf-dd-trigger">Cửa hàng <span>▾</span></button>
+                    <div class="sf-dd-panel">
+                        <a th:href="@{/home}">Tất cả sách</a>
+                        <a th:each="c : ${storeNavCategories}" th:href="@{/home(categoryId=${c.id})}" th:text="${c.name}">Danh mục</a>
+                    </div>
+                </div>
+                <a th:href="@{/contact}">Liên hệ</a>
+                <a href="#tin-tuc">Tin tức</a>
+                <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/orders}">Đơn hàng</a>
+            </nav>
+            <div class="sf-contact-mini">
+                <span title="Email">✉ support@comicstore.vn</span>
+                <span title="Hotline">☎ 1900 1234</span>
+            </div>
+        </div>
+    </div>
+    <div class="sf-searchrow">
+        <div class="sf-wide sf-searchrow-inner">
+            <a class="sf-btn-cats" th:href="@{/home} + '#danh-muc'">
+                <span>☰</span> Danh mục sản phẩm
+            </a>
+            <form class="sf-search-form" th:action="@{/home}" method="get">
+                <select name="categoryId" aria-label="Phạm vi tìm kiếm">
+                    <option value="" th:selected="${selectedCategoryId == null}">Tất cả sản phẩm</option>
+                    <option th:each="c : ${storeNavCategories}"
+                            th:value="${c.id}"
+                            th:selected="${selectedCategoryId != null and selectedCategoryId == c.id}"
+                            th:text="${c.name}">Danh mục</option>
+                </select>
+                <input type="text" name="q" placeholder="Nhập tên sách cần tìm..." th:value="${q}"/>
+                <button type="submit" class="sf-search-submit" aria-label="Tìm kiếm">🔍</button>
+            </form>
+            <div class="sf-search-actions">
+                <div sec:authorize="isAnonymous()" class="account-menu">
+                    <button type="button" class="sf-icon-btn" data-account-trigger title="Tài khoản">👤</button>
+                    <div class="account-popover account-popover-dark" data-account-popover>
+                        <a class="account-btn account-btn-primary" th:href="@{/login}">Đăng nhập</a>
+                        <a class="account-btn" th:href="@{/register}">Đăng ký</a>
+                    </div>
+                </div>
+                <div sec:authorize="isAuthenticated()" class="account-menu">
+                    <button type="button" class="sf-icon-btn" data-account-trigger title="Tài khoản">👤</button>
+                    <div class="account-popover account-popover-user" data-account-popover>
+                        <div class="acc-dd-head"><span>👑</span> Thành viên ComicStore</div>
+                        <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/orders}"><span>📋</span> Đơn hàng của tôi</a>
+                        <a th:href="@{/account/profile}"><span>👤</span> Thông tin tài khoản</a>
+                        <a th:href="@{/account/profile} + '#doi-mat-khau'"><span>🔑</span> Đổi mật khẩu</a>
+                        <form class="account-popover-logout-form" th:action="@{/logout}" method="post">
+                            <button type="submit" class="account-popover-logout-btn"><span>🚪</span> Thoát tài khoản</button>
+                        </form>
+                    </div>
+                </div>
+                <a sec:authorize="hasRole('CUSTOMER')" class="sf-icon-btn" th:href="@{/cart}" title="Giỏ hàng">🛒</a>
+                <a sec:authorize="hasRole('ADMIN')" class="sf-icon-btn" th:href="@{/admin/dashboard}" title="Quản trị">🛠</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="sf-wide sf-main">
+    <div class="flash" th:if="${flash}" th:text="${flash}"></div>
+    <section th:replace="${content}"></section>
+</main>
+
+<footer class="sf-footer" id="gioi-thieu">
+    <div class="sf-wide">
+        <div>
+            <strong style="color:#fff;">ComicStore</strong>
+            <p style="margin:8px 0 0;font-size:14px;max-width:520px;">
+                Cửa hàng truyện tranh, manga và tiểu thuyết minh họa. Giao hàng nhanh, tìm kiếm theo tên và danh mục.
+            </p>
+        </div>
+        <div id="lien-he">
+            <strong style="color:#fff;">Liên hệ</strong>
+            <p style="margin:8px 0 0;font-size:14px;">Email: support@comicstore.vn<br/>Hotline: 1900 1234<br/>
+                <a th:href="@{/contact}" style="color:#7dd3c0;">Gửi tin nhắn</a></p>
+        </div>
+        <div id="tin-tuc">
+            <strong style="color:#fff;">Tin tức</strong>
+            <p style="margin:8px 0 0;font-size:14px;">Cập nhật bộ sách mới mỗi tuần — theo dõi trang chủ.</p>
+        </div>
+    </div>
+</footer>
+<script>
+    document.addEventListener("click", function (event) {
+        var trigger = event.target.closest("[data-account-trigger]");
+        if (trigger) {
+            var menu = trigger.closest(".account-menu");
+            if (menu) {
+                var popover = menu.querySelector("[data-account-popover]");
+                if (popover) {
+                    document.querySelectorAll(".account-popover.open").forEach(function (p) {
+                        if (p !== popover) {
+                            p.classList.remove("open");
+                        }
+                    });
+                    popover.classList.toggle("open");
+                }
+            }
+            return;
+        }
+        if (!event.target.closest(".account-menu")) {
+            document.querySelectorAll(".account-popover.open").forEach(function (p) {
+                p.classList.remove("open");
+            });
+        }
+    });
+</script>
+</body>
+</html>

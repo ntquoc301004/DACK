@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Đơn hàng của tôi · ComicStore')}">
+<section>
+    <th:block th:replace="~{fragments/account-shell :: shell('orders', ~{:: #acc-body})}">
+        <div id="acc-body" class="acc-body">
+            <h2 class="acc-section-title">Đơn hàng của tôi</h2>
+            <p class="acc-section-lead muted">Theo dõi trạng thái các đơn đã đặt.</p>
+
+            <div th:if="${#lists.isEmpty(orders)}" class="acc-empty">
+                Bạn chưa có đơn hàng nào. <a th:href="@{/home}">Tiếp tục mua sắm</a>
+            </div>
+
+            <div class="acc-table" th:if="${!#lists.isEmpty(orders)}">
+                <div class="acc-table-row acc-table-head">
+                    <div>Ngày đặt</div>
+                    <div class="acc-num">Tổng tiền</div>
+                    <div class="acc-num">Trạng thái</div>
+                </div>
+                <div class="acc-table-row" th:each="o : ${orders}">
+                    <div th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}">—</div>
+                    <div class="acc-num" th:text="${#numbers.formatDecimal(o.totalPrice, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</div>
+                    <div class="acc-num"
+                         th:text="${o.status.name() == 'PENDING' ? 'Chờ thanh toán' : (o.status.name() == 'PAID' ? 'Đã thanh toán' : (o.status.name() == 'APPROVED' ? 'Đã duyệt — đang giao' : 'Đã hủy'))}">—</div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</section>
+</html>

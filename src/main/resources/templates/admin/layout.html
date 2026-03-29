@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="adminLayout (main, scripts)">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${adminPageTitle} + ' · Quản trị'">Quản trị</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}"/>
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <a class="admin-brand" th:href="@{/admin/dashboard}">
+            <span class="admin-brand-dot"></span>
+            <span>ComicStore</span>
+        </a>
+        <nav class="admin-nav">
+            <a class="admin-nav-link" th:href="@{/admin/dashboard}"
+               th:classappend="${adminNavActive == 'dashboard'} ? ' active' : ''">
+                <span class="admin-nav-ico">📊</span> Bảng điều khiển
+            </a>
+            <a class="admin-nav-link" th:href="@{/admin/books}"
+               th:classappend="${adminNavActive == 'books'} ? ' active' : ''">
+                <span class="admin-nav-ico">📚</span> Quản lý sách
+            </a>
+            <a class="admin-nav-link" th:href="@{/admin/categories}"
+               th:classappend="${adminNavActive == 'categories'} ? ' active' : ''">
+                <span class="admin-nav-ico">🏷</span> Danh mục
+            </a>
+            <a class="admin-nav-link" th:href="@{/admin/orders}"
+               th:classappend="${adminNavActive == 'orders'} ? ' active' : ''">
+                <span class="admin-nav-ico">📋</span> Đơn hàng
+            </a>
+            <a class="admin-nav-link" th:href="@{/home}">
+                <span class="admin-nav-ico">🏪</span> Xem cửa hàng
+            </a>
+        </nav>
+        <form class="admin-logout" th:action="@{/logout}" method="post">
+            <button type="submit">Đăng xuất</button>
+        </form>
+    </aside>
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <div>
+                <h1 class="admin-page-heading" th:text="${adminPageTitle}">Trang</h1>
+                <p class="admin-welcome">
+                    Xin chào <strong th:text="${adminDisplayName}">Admin</strong>, chào mừng trở lại 👋
+                </p>
+            </div>
+            <div class="admin-topbar-actions">
+                <span class="admin-badge-notify" title="Thông báo">🔔 <small>2</small></span>
+            </div>
+        </header>
+        <div class="admin-content" th:replace="${main}"></div>
+    </div>
+</div>
+<th:block th:replace="${scripts}"></th:block>
+</body>
+</html>

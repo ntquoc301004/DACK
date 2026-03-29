@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Thông tin tài khoản · ComicStore')}">
+<section>
+    <th:block th:replace="~{fragments/account-shell :: shell('profile', ~{:: #acc-body})}">
+        <div id="acc-body" class="acc-body">
+            <h2 class="acc-section-title">Thông tin tài khoản</h2>
+            <p class="acc-section-lead muted">Cập nhật họ tên, email và địa chỉ giao hàng mặc định.</p>
+
+            <form th:action="@{/account/profile}" method="post" th:object="${profileForm}" class="checkout-form-card acc-profile-form">
+                <div class="checkout-field">
+                    <label for="accUsername">Tên đăng nhập</label>
+                    <input id="accUsername" type="text" th:value="${username}" readonly disabled class="acc-readonly-input"/>
+                    <p class="muted" style="margin:6px 0 0;font-size:13px;">Tên đăng nhập không thể thay đổi.</p>
+                </div>
+
+                <div class="checkout-field">
+                    <label for="fullName">Họ và tên <span class="req">*</span></label>
+                    <input id="fullName" type="text" th:field="*{fullName}" placeholder="Họ và tên đầy đủ" autocomplete="name"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></p>
+                </div>
+
+                <div class="checkout-field">
+                    <label for="email">Email <span class="req">*</span></label>
+                    <input id="email" type="email" th:field="*{email}" placeholder="you@example.com" autocomplete="email"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                </div>
+
+                <div class="checkout-field">
+                    <label for="phone">Số điện thoại</label>
+                    <input id="phone" type="tel" th:field="*{phone}" placeholder="09xxxxxxxx" autocomplete="tel"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+                </div>
+
+                <div class="checkout-row-2">
+                    <div class="checkout-field">
+                        <label for="province">Tỉnh / Thành phố</label>
+                        <input id="province" type="text" th:field="*{province}" placeholder="VD: TP. Hồ Chí Minh"/>
+                        <p class="field-error" th:if="${#fields.hasErrors('province')}" th:errors="*{province}"></p>
+                    </div>
+                    <div class="checkout-field">
+                        <label for="district">Quận / Huyện</label>
+                        <input id="district" type="text" th:field="*{district}" placeholder="VD: Quận 1"/>
+                        <p class="field-error" th:if="${#fields.hasErrors('district')}" th:errors="*{district}"></p>
+                    </div>
+                </div>
+
+                <div class="checkout-field">
+                    <label for="ward">Phường / Xã</label>
+                    <input id="ward" type="text" th:field="*{ward}" placeholder="VD: Phường Bến Nghé"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('ward')}" th:errors="*{ward}"></p>
+                </div>
+
+                <div class="checkout-field">
+                    <label for="streetDetail">Số nhà, tên đường</label>
+                    <input id="streetDetail" type="text" th:field="*{streetDetail}" placeholder="Số nhà, tòa nhà, đường..." autocomplete="street-address"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('streetDetail')}" th:errors="*{streetDetail}"></p>
+                </div>
+
+                <div class="actions-bar checkout-actions">
+                    <button class="primary btn-with-icon" type="submit"><span class="btn-ico">💾</span><span>Lưu thay đổi</span></button>
+                </div>
+            </form>
+
+            <h3 id="doi-mat-khau" class="acc-subsection-title">Đổi mật khẩu</h3>
+            <p class="acc-section-lead muted acc-subsection-lead">Nhập mật khẩu hiện tại và mật khẩu mới (tối thiểu 6 ký tự).</p>
+            <form th:action="@{/account/profile/password}" method="post" th:object="${changePasswordForm}" class="checkout-form-card acc-profile-form acc-password-form">
+                <div class="checkout-field">
+                    <label for="currentPassword">Mật khẩu hiện tại <span class="req">*</span></label>
+                    <input id="currentPassword" type="password" th:field="*{currentPassword}" autocomplete="current-password"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></p>
+                </div>
+                <div class="checkout-field">
+                    <label for="newPassword">Mật khẩu mới <span class="req">*</span></label>
+                    <input id="newPassword" type="password" th:field="*{newPassword}" autocomplete="new-password"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></p>
+                </div>
+                <div class="checkout-field">
+                    <label for="confirmPassword">Xác nhận mật khẩu mới <span class="req">*</span></label>
+                    <input id="confirmPassword" type="password" th:field="*{confirmPassword}" autocomplete="new-password"/>
+                    <p class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+                    <p class="field-error" th:if="${#fields.hasErrors('passwordMatching')}" th:errors="*{passwordMatching}"></p>
+                </div>
+                <div class="actions-bar checkout-actions">
+                    <button class="primary btn-with-icon" type="submit"><span class="btn-ico">🔒</span><span>Cập nhật mật khẩu</span></button>
+                </div>
+            </form>
+        </div>
+    </th:block>
+</section>
+</html>
