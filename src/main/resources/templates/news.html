@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Tin tức · ComicStore')}">
+<section class="news-page">
+    <header class="news-hero">
+        <span class="news-label">Tin tức ComicStore</span>
+        <h1>Cập nhật mới nhất từ ComicStore</h1>
+        <p>Khám phá thông tin sách mới, chương trình ưu đãi và các hoạt động cộng đồng dành cho người yêu truyện.</p>
+    </header>
+
+    <div class="news-grid">
+        <article class="news-card">
+            <div class="news-thumb">📚</div>
+            <div class="news-body">
+                <div class="news-meta">02/04/2026 · Sản phẩm mới</div>
+                <h2>Ra mắt bộ sưu tập manga tháng 4</h2>
+                <p>ComicStore bổ sung nhiều tựa manga mới cùng phiên bản bìa đặc biệt, phù hợp cho cả người mới đọc và fan lâu năm.</p>
+            </div>
+        </article>
+
+        <article class="news-card">
+            <div class="news-thumb">🎁</div>
+            <div class="news-body">
+                <div class="news-meta">01/04/2026 · Khuyến mãi</div>
+                <h2>Tuần lễ ưu đãi Freeship toàn quốc</h2>
+                <p>Miễn phí vận chuyển cho đơn đủ điều kiện và nhiều mã giảm giá theo danh mục truyện tranh bán chạy.</p>
+            </div>
+        </article>
+
+        <article class="news-card">
+            <div class="news-thumb">🗞</div>
+            <div class="news-body">
+                <div class="news-meta">30/03/2026 · Cộng đồng</div>
+                <h2>Góc review truyện của khách hàng</h2>
+                <p>Chia sẻ cảm nhận về các đầu truyện yêu thích để nhận điểm thưởng và xuất hiện trên chuyên mục nổi bật.</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="news-cta">
+        <a class="sf-cta sf-cta-buy" th:href="@{/home}">Xem sản phẩm</a>
+        <a class="sf-cta sf-cta-cart" th:href="@{/contact}">Gửi góp ý</a>
+    </div>
+</section>
+</html>

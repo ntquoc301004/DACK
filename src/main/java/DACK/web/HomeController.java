@@ -73,6 +73,16 @@ public class HomeController {
         return "home";
     }
 
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+
+    @GetMapping("/news")
+    public String news() {
+        return "news";
+    }
+
     /** Số lượng đã bán (đơn đã thanh toán / đã duyệt) theo mã sách — dùng trên trang chủ. */
     private Map<Long, Long> soldByBookIdMap(List<Book> pageBooks, Book dealBook) {
         List<Long> ids = pageBooks.stream().map(Book::getId).collect(Collectors.toCollection(ArrayList::new));

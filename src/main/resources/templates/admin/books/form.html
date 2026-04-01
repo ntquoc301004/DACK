@@ -29,7 +29,7 @@
                     <span>Giá (VNĐ)</span>
                     <input type="number" step="1" min="0" max="9999999999" inputmode="numeric"
                            th:field="*{price}" placeholder="Ví dụ: 85000 hoặc 125500" required/>
-                    <small class="muted" style="font-weight:400;">Nhập đúng số tiền bằng đồng (số nguyên), không dùng dấu . hay , phân cách hàng nghìn.</small>
+                    <small class="muted admin-help-text">Nhập đúng số tiền bằng đồng (số nguyên), không dùng dấu . hay , phân cách hàng nghìn.</small>
                     <small class="admin-field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></small>
                 </label>
                 <label>

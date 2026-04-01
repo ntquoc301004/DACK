@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Giới thiệu · ComicStore')}">
+<section class="about-page">
+    <div class="about-hero">
+        <span class="about-badge">Về chúng tôi</span>
+        <h1>ComicStore - Nơi hội tụ đam mê sách và truyện</h1>
+        <p>
+            ComicStore là website bán sách, manga và truyện tranh với trải nghiệm mua sắm nhanh, rõ ràng,
+            giúp bạn dễ dàng tìm đúng đầu sách yêu thích và đặt hàng chỉ trong vài bước.
+        </p>
+    </div>
+
+    <div class="about-grid">
+        <article class="about-card">
+            <h2>Sứ mệnh</h2>
+            <p>
+                Mang đến cho độc giả Việt Nam kho nội dung phong phú, từ truyện tranh giải trí tới sách kỹ năng,
+                cùng dịch vụ chăm sóc khách hàng tận tâm.
+            </p>
+        </article>
+        <article class="about-card">
+            <h2>Tầm nhìn</h2>
+            <p>
+                Trở thành nền tảng mua sách và truyện trực tuyến được yêu thích hàng đầu, nơi người đọc
+                luôn tìm thấy nội dung mới và trải nghiệm mua hàng chất lượng.
+            </p>
+        </article>
+        <article class="about-card">
+            <h2>Giá trị cốt lõi</h2>
+            <ul>
+                <li>Chất lượng sản phẩm rõ ràng.</li>
+                <li>Giá cả minh bạch, ưu đãi hấp dẫn.</li>
+                <li>Giao hàng nhanh, hỗ trợ tận tình.</li>
+            </ul>
+        </article>
+    </div>
+
+    <div class="about-stats">
+        <div class="about-stat">
+            <strong>10.000+</strong>
+            <span>Đầu sách và truyện</span>
+        </div>
+        <div class="about-stat">
+            <strong>50.000+</strong>
+            <span>Khách hàng tin dùng</span>
+        </div>
+        <div class="about-stat">
+            <strong>24/7</strong>
+            <span>Hỗ trợ trực tuyến</span>
+        </div>
+    </div>
+
+    <div class="about-cta">
+        <a class="sf-cta sf-cta-buy" th:href="@{/home}">Khám phá cửa hàng</a>
+        <a class="sf-cta sf-cta-cart" th:href="@{/contact}">Liên hệ tư vấn</a>
+    </div>
+</section>
+</html>

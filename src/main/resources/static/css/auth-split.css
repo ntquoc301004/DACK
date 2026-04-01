@@ -2,9 +2,19 @@
 .auth-body {
     margin: 0;
     min-height: 100vh;
-    background: #fff;
+    background: radial-gradient(circle at 0 0, #eef8ff 0, transparent 32%), #f6f8fb;
     font-family: "Montserrat", "Segoe UI", system-ui, sans-serif;
     color: #333;
+}
+
+.auth-top-strip {
+    background: #1f1f1f;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 12px;
+    letter-spacing: 0.03em;
 }
 
 .auth-header {
@@ -20,16 +30,21 @@
     align-items: center;
     gap: 10px;
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     color: #2e7d32 !important;
     text-decoration: none !important;
 }
 
-.auth-brand-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #76b852, #5a9e3a);
+.auth-brand-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.auth-brand-text {
+    font-family: "Glacial Indifference", "Montserrat", "Segoe UI", sans-serif;
+    letter-spacing: 0.03em;
 }
 
 .auth-header-link {
@@ -46,7 +61,7 @@
 .auth-main {
     max-width: 1040px;
     margin: 0 auto;
-    padding: 24px 20px 48px;
+    padding: 28px 20px 52px;
 }
 
 .auth-flash {
@@ -155,6 +170,11 @@
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: 20px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    padding: 24px 22px;
 }
 
 .auth-title {
@@ -241,7 +261,7 @@
     padding: 16px 24px;
     border: none;
     border-radius: 999px;
-    background: #76b852;
+    background: linear-gradient(135deg, #ff6b00, #ff8f1f);
     color: #fff !important;
     font-family: inherit;
     font-weight: 800;
@@ -253,7 +273,7 @@
 }
 
 .auth-submit:hover {
-    background: #5fa03d;
+    filter: brightness(1.02);
 }
 
 .auth-submit:active {

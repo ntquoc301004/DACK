@@ -4,32 +4,33 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="${title} ?: 'ComicStore'">ComicStore</title>
+    <title th:text="${title} ?: 'BOOKIE'">BOOKIE</title>
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/glacial-indifference"/>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}"/>
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="stylesheet" th:href="@{/css/storefront.css}"/>
     <link rel="stylesheet" th:href="@{/css/account-dashboard.css}"/>
 </head>
 <body class="sf-store" th:classappend="${homePage} ? ' sf-home'">
+<div class="sf-sale-strip">
+    <div class="sf-wide sf-sale-strip-inner">
+        <span>Freeship toàn quốc cho đơn từ 200.000 đ</span>
+        <span>Đổi trả trong 7 ngày</span>
+        <span>Hotline 1900 1234</span>
+    </div>
+</div>
 <header class="sf-header-wrap">
     <div class="sf-topbar">
         <div class="sf-wide sf-topbar-inner">
             <a class="sf-logo" th:href="@{/home}">
-                <span class="sf-logo-mark">⚡</span>
-                <span>ComicStore</span>
+                <img class="sf-logo-img" th:src="@{/images/logo.png}" alt="ComicStore"/>
+                <span class="sf-brand-text">BOOKIE</span>
             </a>
             <nav class="sf-topnav">
                 <a th:href="@{/home}">Trang chủ</a>
-                <a href="#gioi-thieu">Giới thiệu</a>
-                <div class="sf-dd">
-                    <button type="button" class="sf-dd-trigger">Cửa hàng <span>▾</span></button>
-                    <div class="sf-dd-panel">
-                        <a th:href="@{/home}">Tất cả sách</a>
-                        <a th:each="c : ${storeNavCategories}" th:href="@{/home(categoryId=${c.id})}" th:text="${c.name}">Danh mục</a>
-                    </div>
-                </div>
+                <a th:href="@{/about}">Giới thiệu</a>
                 <a th:href="@{/contact}">Liên hệ</a>
-                <a href="#tin-tuc">Tin tức</a>
-                <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/orders}">Đơn hàng</a>
+                <a th:href="@{/news}">Tin tức</a>
             </nav>
             <div class="sf-contact-mini">
                 <span title="Email">✉ support@comicstore.vn</span>
@@ -39,9 +40,6 @@
     </div>
     <div class="sf-searchrow">
         <div class="sf-wide sf-searchrow-inner">
-            <a class="sf-btn-cats" th:href="@{/home} + '#danh-muc'">
-                <span>☰</span> Danh mục sản phẩm
-            </a>
             <form class="sf-search-form" th:action="@{/home}" method="get">
                 <select name="categoryId" aria-label="Phạm vi tìm kiếm">
                     <option value="" th:selected="${selectedCategoryId == null}">Tất cả sản phẩm</option>
@@ -55,25 +53,34 @@
             </form>
             <div class="sf-search-actions">
                 <div sec:authorize="isAnonymous()" class="account-menu">
-                    <button type="button" class="sf-icon-btn" data-account-trigger title="Tài khoản">👤</button>
+                    <button type="button" class="sf-account-btn" data-account-trigger title="Tài khoản">
+                        <span class="sf-account-avatar">👤</span>
+                        <span class="sf-account-name">Tài khoản</span>
+                    </button>
                     <div class="account-popover account-popover-dark" data-account-popover>
                         <a class="account-btn account-btn-primary" th:href="@{/login}">Đăng nhập</a>
                         <a class="account-btn" th:href="@{/register}">Đăng ký</a>
                     </div>
                 </div>
                 <div sec:authorize="isAuthenticated()" class="account-menu">
-                    <button type="button" class="sf-icon-btn" data-account-trigger title="Tài khoản">👤</button>
+                    <button type="button" class="sf-account-btn" data-account-trigger title="Tài khoản">
+                        <span class="sf-account-avatar">👤</span>
+                        <span class="sf-account-name" sec:authentication="name">Tài khoản</span>
+                    </button>
                     <div class="account-popover account-popover-user" data-account-popover>
-                        <div class="acc-dd-head"><span>👑</span> Thành viên ComicStore</div>
-                        <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/orders}"><span>📋</span> Đơn hàng của tôi</a>
+                        <div class="acc-dd-head"><span>👑</span> Thành viên BOOKIE</div>
                         <a th:href="@{/account/profile}"><span>👤</span> Thông tin tài khoản</a>
+                        <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/orders}"><span>📋</span> Đơn hàng của tôi</a>
                         <a th:href="@{/account/profile} + '#doi-mat-khau'"><span>🔑</span> Đổi mật khẩu</a>
                         <form class="account-popover-logout-form" th:action="@{/logout}" method="post">
                             <button type="submit" class="account-popover-logout-btn"><span>🚪</span> Thoát tài khoản</button>
                         </form>
                     </div>
                 </div>
-                <a sec:authorize="hasRole('CUSTOMER')" class="sf-icon-btn" th:href="@{/cart}" title="Giỏ hàng">🛒</a>
+                <a sec:authorize="hasRole('CUSTOMER')" class="sf-icon-btn sf-cart-btn" th:href="@{/cart}" title="Giỏ hàng">
+                    <span>🛒</span>
+                    <span class="sf-cart-count" th:text="${cartItemCount}">0</span>
+                </a>
                 <a sec:authorize="hasRole('ADMIN')" class="sf-icon-btn" th:href="@{/admin/dashboard}" title="Quản trị">🛠</a>
             </div>
         </div>
@@ -87,20 +94,20 @@
 
 <footer class="sf-footer" id="gioi-thieu">
     <div class="sf-wide">
-        <div>
-            <strong style="color:#fff;">ComicStore</strong>
-            <p style="margin:8px 0 0;font-size:14px;max-width:520px;">
+        <div class="sf-footer-col">
+            <strong class="sf-footer-title sf-brand-text">BOOKIE</strong>
+            <p class="sf-footer-text sf-footer-about">
                 Cửa hàng truyện tranh, manga và tiểu thuyết minh họa. Giao hàng nhanh, tìm kiếm theo tên và danh mục.
             </p>
         </div>
-        <div id="lien-he">
-            <strong style="color:#fff;">Liên hệ</strong>
-            <p style="margin:8px 0 0;font-size:14px;">Email: support@comicstore.vn<br/>Hotline: 1900 1234<br/>
-                <a th:href="@{/contact}" style="color:#7dd3c0;">Gửi tin nhắn</a></p>
+        <div id="lien-he" class="sf-footer-col">
+            <strong class="sf-footer-title">Liên hệ</strong>
+            <p class="sf-footer-text">Email: support@comicstore.vn<br/>Hotline: 1900 1234<br/>
+                <a th:href="@{/contact}" class="sf-footer-link">Gửi tin nhắn</a></p>
         </div>
-        <div id="tin-tuc">
-            <strong style="color:#fff;">Tin tức</strong>
-            <p style="margin:8px 0 0;font-size:14px;">Cập nhật bộ sách mới mỗi tuần — theo dõi trang chủ.</p>
+        <div id="tin-tuc" class="sf-footer-col">
+            <strong class="sf-footer-title">Tin tức</strong>
+            <p class="sf-footer-text">Cập nhật bộ sách mới mỗi tuần — theo dõi trang chủ.</p>
         </div>
     </div>
 </footer>

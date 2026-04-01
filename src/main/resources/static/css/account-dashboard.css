@@ -8,8 +8,8 @@
 }
 
 .acc-aside {
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid #e7edf5;
     border-radius: 16px;
     padding: 18px;
     box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
@@ -51,9 +51,9 @@
 }
 
 .acc-nav a.acc-nav-active {
-    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
-    border-color: #c7d2fe;
-    color: #4338ca;
+    background: linear-gradient(135deg, #ffefe5, #fff5eb);
+    border-color: #ffd4ba;
+    color: #d45a00;
 }
 
 .acc-banner-warn {
@@ -69,7 +69,7 @@
 
 .acc-panel {
     background: #fff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e7edf5;
     border-radius: 16px;
     padding: 22px 24px;
     box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
@@ -156,6 +156,11 @@
     background: #f1f5f9 !important;
     color: #64748b !important;
     cursor: not-allowed;
+}
+
+.acc-inline-note {
+    margin: 6px 0 0;
+    font-size: 13px;
 }
 
 @media (max-width: 760px) {

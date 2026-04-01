@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{fragments/layout :: layout(~{::section}, 'Đơn hàng của tôi · ComicStore')}">
-<section>
+<section class="orders-page">
     <th:block th:replace="~{fragments/account-shell :: shell('orders', ~{:: #acc-body})}">
         <div id="acc-body" class="acc-body">
             <h2 class="acc-section-title">Đơn hàng của tôi</h2>

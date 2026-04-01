@@ -12,11 +12,11 @@
             </div>
             <nav class="acc-nav">
                 <a th:href="@{/orders}"
-                   th:classappend="${activeSection == 'orders'} ? ' acc-nav-active' : ''">Đơn hàng</a>
+                   th:classappend="${activeSection == 'orders'} ? ' acc-nav-active' : ''">📋 Đơn hàng</a>
                 <a th:href="@{/cart}"
-                   th:classappend="${activeSection == 'cart'} ? ' acc-nav-active' : ''">Giỏ hàng</a>
+                   th:classappend="${activeSection == 'cart'} ? ' acc-nav-active' : ''">🛒 Giỏ hàng</a>
                 <a th:href="@{/account/profile}"
-                   th:classappend="${activeSection == 'profile'} ? ' acc-nav-active' : ''">Thông tin tài khoản</a>
+                   th:classappend="${activeSection == 'profile'} ? ' acc-nav-active' : ''">👤 Thông tin tài khoản</a>
             </nav>
             <div class="acc-banner-warn" th:if="${accountProfileIncomplete}">
                 Vui lòng cập nhật đầy đủ số điện thoại và địa chỉ trong hồ sơ để giao hàng thuận tiện.

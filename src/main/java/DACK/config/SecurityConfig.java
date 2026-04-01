@@ -36,6 +36,7 @@ public class SecurityConfig {
     AuthenticationSuccessHandler loginSuccessHandler() {
         SavedRequestAwareAuthenticationSuccessHandler customerHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         customerHandler.setDefaultTargetUrl("/home");
+        customerHandler.setAlwaysUseDefaultTargetUrl(true);
         return (request, response, authentication) -> {
             if (isAdmin(authentication)) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
@@ -71,7 +72,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler loginSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/books/**", "/contact", "/register", "/login",
+                        .requestMatchers("/", "/home", "/about", "/news", "/books/**", "/contact", "/register", "/login",
                                 "/forgot-password", "/reset-password", "/css/**", "/images/**", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(RoleName.ADMIN.name())
                         .requestMatchers("/cart/**", "/checkout/**", "/orders/**").hasRole(RoleName.CUSTOMER.name())

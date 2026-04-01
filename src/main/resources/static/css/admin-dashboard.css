@@ -30,19 +30,24 @@
     align-items: center;
     gap: 12px;
     font-weight: 800;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     color: #4338ca;
     text-decoration: none;
 }
 
 .admin-brand:hover { text-decoration: none; color: #4f46e5; }
 
-.admin-brand-dot {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+.admin-brand-img {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.admin-brand-text {
+    font-family: "Glacial Indifference", "Segoe UI", sans-serif;
+    letter-spacing: 0.03em;
 }
 
 .admin-nav {
@@ -70,9 +75,9 @@
 }
 
 .admin-nav-link.active {
-    background: linear-gradient(135deg, #6366f1, #7c3aed);
+    background: linear-gradient(135deg, #ff6b00, #ff8f1f);
     color: #fff;
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 8px 20px rgba(255, 107, 0, 0.3);
 }
 
 .admin-nav-ico { font-size: 1.1rem; }
@@ -348,13 +353,13 @@
     padding: 12px 18px;
     border-radius: 12px;
     border: none;
-    background: linear-gradient(135deg, #6366f1, #7c3aed);
+    background: linear-gradient(135deg, #ff6b00, #ff8f1f);
     color: #fff;
     font-weight: 700;
     font-size: 0.92rem;
     text-decoration: none;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.28);
+    box-shadow: 0 8px 20px rgba(255, 107, 0, 0.28);
 }
 
 .admin-btn-primary:hover {
@@ -380,6 +385,25 @@
     background: #f8fafc;
     color: #4338ca;
     text-decoration: none;
+}
+
+.admin-inline-filter-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-filter-label {
+    font-size: 14px;
+}
+
+.admin-filter-select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    min-width: 180px;
+    background: #fff;
 }
 
 .admin-table-card {
@@ -579,4 +603,75 @@
 .admin-dashboard-page .small,
 .admin-books-page .small {
     font-size: 0.82rem;
+}
+
+.admin-help-text {
+    font-weight: 400;
+}
+
+.admin-empty-note {
+    padding: 12px 18px;
+    margin: 0;
+}
+
+.admin-order-block {
+    margin-bottom: 18px;
+}
+
+.admin-order-subtitle {
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+.admin-order-note {
+    margin: 0 0 14px;
+    font-size: 14px;
+}
+
+.admin-order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.admin-order-note-cancel {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.admin-order-help {
+    font-size: 13px;
+    margin: 0 0 8px;
+}
+
+.admin-order-status-form {
+    gap: 12px;
+}
+
+.admin-order-status-select {
+    min-width: 240px;
+    padding: 10px 14px;
+}
+
+.admin-order-ship-list {
+    margin: 0;
+    display: grid;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.admin-order-lines-title {
+    margin: 0 0 14px;
+    padding: 0 4px;
+}
+
+.admin-order-total {
+    text-align: right;
+    padding: 14px 18px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin: 0;
+    border-top: 1px solid #f1f5f9;
 }

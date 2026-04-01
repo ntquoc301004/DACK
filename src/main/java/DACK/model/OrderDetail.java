@@ -33,5 +33,12 @@ public class OrderDetail {
     @NotNull
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
+
+    public BigDecimal lineTotal() {
+        if (price == null || quantity == null) {
+            return BigDecimal.ZERO;
+        }
+        return price.multiply(BigDecimal.valueOf(quantity.longValue()));
+    }
 }
 

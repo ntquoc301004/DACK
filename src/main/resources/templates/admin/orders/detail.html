@@ -16,9 +16,9 @@
         <a class="admin-btn-ghost" th:href="@{/admin/orders}">← Danh sách</a>
     </div>
 
-    <div class="admin-card" style="margin-bottom:18px;">
-        <h3 class="admin-books-title" style="font-size:1rem;margin-bottom:12px;">Trạng thái đơn hàng</h3>
-        <p class="muted" style="margin:0 0 14px;font-size:14px;">
+    <div class="admin-card admin-order-block">
+        <h3 class="admin-books-title admin-order-subtitle">Trạng thái đơn hàng</h3>
+        <p class="muted admin-order-note">
             Hiện tại:
             <strong th:if="${order.status.name() == 'PENDING'}">Chờ thanh toán</strong>
             <strong th:if="${order.status.name() == 'PAID'}">Đã thanh toán — chờ duyệt / giao</strong>
@@ -26,7 +26,7 @@
             <strong th:if="${order.status.name() == 'CANCELLED'}">Đã hủy</strong>
         </p>
 
-        <div th:if="${order.status.name() == 'PENDING'}" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;align-items:center;">
+        <div th:if="${order.status.name() == 'PENDING'}" class="admin-order-actions">
             <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
                 <input type="hidden" name="status" value="PAID"/>
                 <button type="submit" class="admin-btn-primary">Xác nhận đã thanh toán</button>
@@ -37,7 +37,7 @@
             </form>
         </div>
 
-        <div th:if="${order.status.name() == 'PAID'}" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;align-items:center;">
+        <div th:if="${order.status.name() == 'PAID'}" class="admin-order-actions">
             <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
                 <input type="hidden" name="status" value="PENDING"/>
                 <button type="submit" class="admin-btn-ghost">Đánh dấu chưa thanh toán</button>
@@ -51,21 +51,21 @@
             </form>
         </div>
 
-        <div th:if="${order.status.name() == 'APPROVED'}" style="margin-bottom:16px;">
+        <div th:if="${order.status.name() == 'APPROVED'}" class="admin-order-actions">
             <form th:action="@{'/admin/orders/' + ${order.id} + '/cancel'}" method="post"
                   onsubmit="return confirm('Hủy đơn đã duyệt? Tồn kho sẽ được hoàn theo từng dòng hàng.');">
                 <button type="submit" class="admin-btn-danger">Hủy đơn</button>
             </form>
         </div>
 
-        <p th:if="${order.status.name() == 'CANCELLED'}" class="muted" style="font-size:14px;margin-bottom:12px;">
+        <p th:if="${order.status.name() == 'CANCELLED'}" class="muted admin-order-note-cancel">
             Đơn đã hủy. Nếu đơn từng ở trạng thái đã thanh toán hoặc đã duyệt, số lượng sách đã được hoàn vào kho.
         </p>
 
         <div th:if="${order.status.name() != 'CANCELLED'}">
-            <p class="muted" style="font-size:13px;margin:0 0 8px;">Hoặc chọn trạng thái (theo quy tắc cho phép):</p>
-            <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post" class="admin-inline-filter" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-                <select name="status" style="padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;min-width:240px;">
+            <p class="muted admin-order-help">Hoặc chọn trạng thái (theo quy tắc cho phép):</p>
+            <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post" class="admin-inline-filter admin-inline-filter-row admin-order-status-form">
+                <select name="status" class="admin-filter-select admin-order-status-select">
                     <option th:each="s : ${allowedStatusChanges}" th:value="${s.name()}"
                             th:selected="${order.status.name() == s.name()}"
                             th:text="${s.name() == 'PENDING'} ? 'Chờ thanh toán' : (${s.name() == 'PAID'} ? 'Đã thanh toán (chờ duyệt)' : (${s.name() == 'APPROVED'} ? 'Đã duyệt — giao hàng' : 'Đã hủy'))">—</option>
@@ -75,9 +75,9 @@
         </div>
     </div>
 
-    <div class="admin-card" style="margin-bottom:18px;" th:if="${order.shipRecipientName != null}">
-        <h3 class="admin-books-title" style="font-size:1rem;margin-bottom:12px;">Giao hàng</h3>
-        <dl style="margin:0;display:grid;gap:8px;font-size:14px;">
+    <div class="admin-card admin-order-block" th:if="${order.shipRecipientName != null}">
+        <h3 class="admin-books-title admin-order-subtitle">Giao hàng</h3>
+        <dl class="admin-order-ship-list">
             <div><strong>Người nhận:</strong> <span th:text="${order.shipRecipientName}">—</span></div>
             <div><strong>Điện thoại:</strong> <span th:text="${order.shipPhone}">—</span></div>
             <div th:if="${order.shipStreetDetail}"><strong>Số nhà, đường:</strong> <span th:text="${order.shipStreetDetail}">—</span></div>
@@ -89,7 +89,7 @@
     </div>
 
     <div class="admin-card admin-table-card">
-        <h3 class="admin-books-title" style="font-size:1rem;margin:0 0 14px;padding:0 4px;">Dòng hàng</h3>
+        <h3 class="admin-books-title admin-order-subtitle admin-order-lines-title">Dòng hàng</h3>
         <div class="admin-table-wrap">
             <table class="admin-data-table">
                 <thead>
@@ -105,14 +105,12 @@
                     <td th:text="${d.book.title}">Sách</td>
                     <td class="num" th:text="${#numbers.formatDecimal(d.price, 1, 'POINT', 0, 'COMMA')} + ' đ'">0</td>
                     <td class="num" th:text="${d.quantity}">1</td>
-                    <td class="num"
-                        th:with="line=${d.price.multiply(T(java.math.BigDecimal).valueOf(d.quantity))}"
-                        th:text="${#numbers.formatDecimal(line, 1, 'POINT', 0, 'COMMA')} + ' đ'">0</td>
+                    <td class="num" th:text="${#numbers.formatDecimal(d.lineTotal(), 1, 'POINT', 0, 'COMMA')} + ' đ'">0</td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <p style="text-align:right;padding:14px 18px;font-weight:800;font-size:1.05rem;margin:0;border-top:1px solid #f1f5f9;">
+        <p class="admin-order-total">
             Tổng cộng:
             <span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
         </p>

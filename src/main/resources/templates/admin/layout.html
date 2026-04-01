@@ -5,6 +5,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${adminPageTitle} + ' · Quản trị'">Quản trị</title>
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/glacial-indifference"/>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}"/>
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}"/>
 </head>
@@ -12,8 +14,8 @@
 <div class="admin-shell">
     <aside class="admin-sidebar">
         <a class="admin-brand" th:href="@{/admin/dashboard}">
-            <span class="admin-brand-dot"></span>
-            <span>ComicStore</span>
+            <img class="admin-brand-img" th:src="@{/images/logo.png}" alt="ComicStore"/>
+            <span class="admin-brand-text">BOOKIE</span>
         </a>
         <nav class="admin-nav">
             <a class="admin-nav-link" th:href="@{/admin/dashboard}"
@@ -49,7 +51,7 @@
                 </p>
             </div>
             <div class="admin-topbar-actions">
-                <span class="admin-badge-notify" title="Thông báo">🔔 <small>2</small></span>
+                <a class="admin-btn-ghost" th:href="@{/home}">Xem cửa hàng</a>
             </div>
         </header>
         <div class="admin-content" th:replace="${main}"></div>

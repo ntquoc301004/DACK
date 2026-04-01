@@ -10,9 +10,9 @@
             <h2 class="admin-books-title">Đơn hàng</h2>
             <p class="admin-books-sub muted">Theo dõi trạng thái và tổng tiền</p>
         </div>
-        <form class="admin-inline-filter" th:action="@{/admin/orders}" method="get" style="display:flex;gap:10px;align-items:center;">
-            <label class="muted" style="font-size:14px;">Lọc:</label>
-            <select name="status" onchange="this.form.submit()" style="padding:10px 12px;border-radius:10px;border:1px solid #e2e8f0;">
+        <form class="admin-inline-filter admin-inline-filter-row" th:action="@{/admin/orders}" method="get">
+            <label class="muted admin-filter-label">Lọc:</label>
+            <select name="status" onchange="this.form.submit()" class="admin-filter-select">
                 <option value="" th:selected="${statusFilter == null}">Tất cả</option>
                 <option th:each="s : ${orderStatuses}" th:value="${s.name()}"
                         th:selected="${statusFilter != null and statusFilter.name() == s.name()}"

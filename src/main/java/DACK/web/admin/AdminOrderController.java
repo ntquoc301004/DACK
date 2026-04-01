@@ -50,8 +50,13 @@ public class AdminOrderController {
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public String detail(@PathVariable Long id, Model model) {
-        Order order = orderRepository.findAdminDetailById(id).orElseThrow();
+    public String detail(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        var orderOpt = orderRepository.findAdminDetailById(id);
+        if (orderOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("flash", "Không tìm thấy đơn hàng #" + id);
+            return "redirect:/admin/orders";
+        }
+        Order order = orderOpt.get();
         model.addAttribute("order", order);
         model.addAttribute("allowedStatusChanges", AdminOrderStatusService.allowedTargets(order.getStatus()));
         addAdminLayoutAttrs(model, "Chi tiết đơn #" + id);
