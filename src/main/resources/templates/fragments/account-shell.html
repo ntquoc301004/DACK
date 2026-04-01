@@ -1,0 +1,29 @@
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:fragment="shell (activeSection, content)">
+    <div class="acc-dash">
+        <aside class="acc-aside" aria-label="Tài khoản">
+            <div class="acc-aside-head">
+                <div class="acc-aside-user" th:text="${username}">user</div>
+                <div class="acc-aside-meta muted">
+                    <span th:text="${accountOrderCount} + ' đơn'">0 đơn</span>
+                    <span> · </span>
+                    <span th:text="'Đã chi: ' + ${#numbers.formatDecimal(accountTotalPaid != null ? accountTotalPaid : 0, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                </div>
+            </div>
+            <nav class="acc-nav">
+                <a th:href="@{/orders}"
+                   th:classappend="${activeSection == 'orders'} ? ' acc-nav-active' : ''">📋 Đơn hàng</a>
+                <a th:href="@{/cart}"
+                   th:classappend="${activeSection == 'cart'} ? ' acc-nav-active' : ''">🛒 Giỏ hàng</a>
+                <a th:href="@{/account/profile}"
+                   th:classappend="${activeSection == 'profile'} ? ' acc-nav-active' : ''">👤 Thông tin tài khoản</a>
+            </nav>
+            <div class="acc-banner-warn" th:if="${accountProfileIncomplete}">
+                Vui lòng cập nhật đầy đủ số điện thoại và địa chỉ trong hồ sơ để giao hàng thuận tiện.
+            </div>
+        </aside>
+        <div class="acc-panel">
+            <th:block th:replace="${content}"></th:block>
+        </div>
+    </div>
+</th:block>

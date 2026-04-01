@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Trang chủ · ComicStore')}">
+<section>
+    <div class="sf-hero" id="danh-muc">
+        <aside class="sf-cat-side">
+            <h3>Thể loại</h3>
+            <a class="sf-cat-link"
+               th:classappend="${selectedCategoryId == null} ? ' active'"
+               th:href="@{/home(q=${q})}">
+                <span class="sf-cat-ico">📚</span>
+                <span>Tất cả sách</span>
+            </a>
+            <a class="sf-cat-link"
+               th:each="c : ${categories}"
+               th:classappend="${selectedCategoryId != null and selectedCategoryId == c.id} ? ' active'"
+               th:href="@{/home(q=${q}, categoryId=${c.id})}">
+                <span class="sf-cat-ico" th:text="${categoryIconById[c.id]}">📖</span>
+                <span th:text="${c.name}">Danh mục</span>
+            </a>
+        </aside>
+
+        <div class="sf-hero-center">
+            <div class="sf-slider" th:if="${!#lists.isEmpty(spotlightBooks)}">
+                <div class="sf-slide" th:each="b, spotIter : ${spotlightBooks}">
+                    <img class="sf-slide-img"
+                         th:if="${b.image != null and !#strings.isEmpty(b.image)}"
+                         th:src="${b.image}"
+                         th:alt="${b.title}"
+                         th:loading="${spotIter.index == 0} ? 'eager' : 'lazy'"
+                         th:decoding="${spotIter.index == 0} ? 'sync' : 'async'"
+                         th:attr="fetchpriority=${spotIter.index == 0} ? 'high' : 'low'"/>
+                    <div class="sf-slide-bg placeholder" th:unless="${b.image != null and !#strings.isEmpty(b.image)}"></div>
+                    <div class="sf-slide-overlay">
+                        <h2 th:text="${b.title}">Tiêu đề nổi bật</h2>
+                        <p th:text="${b.author} + ' · ' + ${b.category.name}">Tác giả</p>
+                        <a class="sf-cta" th:href="@{'/books/' + ${b.id}}">Mua ngay</a>
+                    </div>
+                </div>
+            </div>
+            <div class="sf-slider" th:if="${#lists.isEmpty(spotlightBooks)}">
+                <div class="sf-slide">
+                    <div class="sf-slide-bg placeholder"></div>
+                    <div class="sf-slide-overlay">
+                        <h2>Truyện mới mỗi tuần</h2>
+                        <p>Manga, comic và tiểu thuyết — lướt danh mục bên trái hoặc tìm kiếm phía trên.</p>
+                        <a class="sf-cta" th:href="@{/home}">Khám phá</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="sf-deal-side" th:if="${dealBook != null}">
+            <span class="sf-deal-badge">Ưu đãi</span>
+            <img class="sf-deal-cover" th:if="${dealBook.image != null and !#strings.isEmpty(dealBook.image)}"
+                 th:src="${dealBook.image}" alt="" loading="eager" decoding="sync"/>
+            <div class="sf-deal-placeholder" th:unless="${dealBook.image != null and !#strings.isEmpty(dealBook.image)}">Ảnh bìa</div>
+            <h3 class="sf-deal-title" th:text="${dealBook.title}">Tên sách</h3>
+            <div class="sf-stars">★★★★☆</div>
+            <div class="sf-deal-price" th:text="${#numbers.formatDecimal(dealBook.price, 1, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</div>
+            <p class="sf-deal-sold muted" th:text="'Đã bán ' + ${soldByBookId[dealBook.id]} + ' cuốn'">Đã bán 0 cuốn</p>
+            <div class="sf-deal-actions">
+                <a class="sf-cta sf-cta-buy" th:href="@{'/books/' + ${dealBook.id}}">Mua hàng</a>
+                <form sec:authorize="hasRole('CUSTOMER')" th:action="@{'/cart/add/' + ${dealBook.id}}" method="post" class="sf-deal-cart-form">
+                    <input type="hidden" name="redirect" th:value="@{/home}"/>
+                    <button type="submit" class="sf-cta sf-cta-cart"
+                            th:disabled="${dealBook.quantity == null or dealBook.quantity <= 0}"
+                            th:text="${dealBook.quantity == null or dealBook.quantity <= 0} ? 'Hết hàng' : 'Thêm vào giỏ'">Thêm vào giỏ</button>
+                </form>
+                <a sec:authorize="isAnonymous()" class="sf-link" th:href="@{/login}">Đăng nhập để mua</a>
+            </div>
+        </aside>
+        <aside class="sf-deal-side" th:if="${dealBook == null}">
+            <span class="sf-deal-badge">ComicStore</span>
+            <div class="sf-deal-placeholder">Chưa có sách</div>
+            <p class="muted sf-deal-empty-note">Thêm sách trong trang quản trị để hiển thị ưu đãi tại đây.</p>
+        </aside>
+    </div>
+
+    <div class="sf-trust-row">
+        <div class="sf-trust-box">
+            <span class="sf-trust-ico">🚚</span>
+            <div>
+                <strong>Miễn phí giao hàng</strong>
+                <span>Đơn từ 200.000 ₫ (minh họa)</span>
+            </div>
+        </div>
+        <div class="sf-trust-box">
+            <span class="sf-trust-ico">💬</span>
+            <div>
+                <strong>Chăm sóc khách hàng</strong>
+                <span>Hỗ trợ 24/7 qua hotline &amp; email</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="sf-promo-row" th:if="${!#lists.isEmpty(promoCategories)}">
+        <a th:each="c, iter : ${promoCategories}"
+           th:href="@{/home(categoryId=${c.id})}"
+           class="sf-promo"
+           th:classappend="${iter.index == 0} ? ' sf-promo-a' : (${iter.index == 1} ? ' sf-promo-b' : (${iter.index == 2} ? ' sf-promo-c' : ' sf-promo-d'))">
+            <h3 th:text="${c.name}">Danh mục</h3>
+            <span class="sf-mini">Truyện chọn lọc — xem ngay</span>
+            <span class="sf-cta-outline">Mua ngay</span>
+        </a>
+    </div>
+
+    <div class="sf-section-head" id="san-pham">
+        <h2 class="sf-section-title">Phổ biến nhất</h2>
+        <a class="sf-more" th:href="@{/home}">Xem thêm &gt;</a>
+    </div>
+
+    <div class="sf-products">
+        <th:block th:if="${#lists.isEmpty(books.content)}">
+            <p class="sf-empty-hint">Không tìm thấy sách phù hợp. Thử bỏ bộ lọc hoặc từ khóa khác.</p>
+        </th:block>
+        <article class="sf-pcard" th:each="b : ${books.content}">
+            <div class="sf-pcard-cover">
+                <img th:if="${b.image}" th:src="${b.image}" alt="" loading="lazy" decoding="async"/>
+                <span class="ph" th:unless="${b.image}">Chưa có ảnh</span>
+            </div>
+            <div class="sf-pcard-body">
+                <span class="sf-pcard-cat" th:text="${b.category.name}">Danh mục</span>
+                <a class="sf-pcard-title" th:text="${b.title}" th:href="@{'/books/' + ${b.id}}">Tiêu đề</a>
+                <div class="sf-pcard-price" th:text="${#numbers.formatDecimal(b.price, 1, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</div>
+                <span class="sf-pcard-sold" th:text="'Đã bán ' + ${soldByBookId[b.id]} + ' cuốn'">Đã bán 0 cuốn</span>
+                <div class="sf-pcard-actions">
+                    <a class="sf-cta sf-cta-buy" th:href="@{'/books/' + ${b.id}}">Mua hàng</a>
+                    <form sec:authorize="hasRole('CUSTOMER')" class="sf-pcard-cart-form" th:action="@{'/cart/add/' + ${b.id}}" method="post">
+                        <input type="hidden" name="redirect"
+                               th:value="@{/home(page=${books.number}, q=${q}, categoryId=${selectedCategoryId})}"/>
+                        <button class="sf-cta sf-cta-cart sf-cta-full" type="submit"
+                                th:disabled="${b.quantity == null or b.quantity <= 0}"
+                                th:text="${b.quantity == null or b.quantity <= 0} ? 'Hết hàng' : 'Thêm vào giỏ'">Thêm vào giỏ</button>
+                    </form>
+                    <a sec:authorize="isAnonymous()" class="sf-link" th:href="@{/login}">Đăng nhập để mua</a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <div class="sf-pagination" th:if="${books.totalPages > 1}">
+        <a th:classappend="${books.first} ? 'disabled'"
+           th:href="@{/home(page=${books.number - 1}, q=${q}, categoryId=${selectedCategoryId})}">Trước</a>
+        <span th:text="'Trang ' + (${books.number} + 1) + ' / ' + ${books.totalPages}">Trang</span>
+        <a th:classappend="${books.last} ? 'disabled'"
+           th:href="@{/home(page=${books.number + 1}, q=${q}, categoryId=${selectedCategoryId})}">Sau</a>
+    </div>
+</section>
+</html>

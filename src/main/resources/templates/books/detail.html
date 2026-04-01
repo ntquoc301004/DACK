@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:with="detailTitle=${book.title} + ' · Chi tiết sách'"
+      th:replace="~{fragments/layout :: layout(~{::section}, ${detailTitle})}">
+<section class="pd-page"
+         th:attr="data-pd-max=${book.quantity != null ? book.quantity : 0},
+                  data-detail-url=@{/books/{id}(id=${book.id})},
+                  data-checkout-url=@{/checkout}">
+    <nav class="pd-breadcrumb" aria-label="Breadcrumb">
+        <a th:href="@{/home}">Trang chủ</a>
+        <span class="pd-bc-sep">›</span>
+        <a th:href="@{/home(categoryId=${book.category.id})}" th:text="${book.category.name}">Danh mục</a>
+        <span class="pd-bc-sep">›</span>
+        <span class="pd-bc-current" th:text="${book.title}">Sách</span>
+    </nav>
+
+    <div class="pd-grid">
+        <div class="pd-media">
+            <div class="pd-main-visual">
+                <img th:if="${book.image != null and !#strings.isEmpty(book.image)}"
+                     class="pd-main-img" th:src="${book.image}" th:alt="${book.title}" loading="eager" decoding="sync"/>
+                <div class="pd-main-placeholder" th:unless="${book.image != null and !#strings.isEmpty(book.image)}">
+                    Chưa có ảnh bìa
+                </div>
+            </div>
+            <div class="pd-thumbs" th:if="${book.image != null and !#strings.isEmpty(book.image)}">
+                <button type="button" class="pd-thumb is-active" th:attr="aria-label='Ảnh 1'">
+                    <img th:src="${book.image}" alt=""/>
+                </button>
+                <button type="button" class="pd-thumb" th:attr="aria-label='Ảnh 2'">
+                    <img th:src="${book.image}" alt=""/>
+                </button>
+            </div>
+
+            <div class="pd-buy-stack" sec:authorize="hasRole('CUSTOMER')">
+                <form id="pd-cart-form" th:action="@{'/cart/add/' + ${book.id}}" method="post" class="pd-form-inline">
+                    <input type="hidden" name="qty" id="pd-qty-hidden" value="1"/>
+                    <input type="hidden" name="redirect" id="pd-redirect-hidden" th:value="@{'/books/' + ${book.id}}"/>
+                </form>
+                <div class="pd-qty-near-actions">
+                    <span class="pd-qty-label">Số lượng</span>
+                    <div class="pd-stepper">
+                        <button type="button" class="pd-step-btn" id="pd-qty-minus" aria-label="Giảm">−</button>
+                        <span class="pd-step-val" id="pd-qty-display">1</span>
+                        <button type="button" class="pd-step-btn" id="pd-qty-plus" aria-label="Tăng">+</button>
+                    </div>
+                </div>
+                <div class="pd-cta-row">
+                    <button type="button" class="pd-btn pd-btn-cart" id="pd-btn-add"
+                            th:disabled="${book.quantity == null or book.quantity <= 0}">
+                        <span class="pd-btn-ico">🛒</span> <span class="pd-btn-add-text">Thêm vào giỏ hàng</span>
+                    </button>
+                    <button type="button" class="pd-btn pd-btn-buy" id="pd-btn-buy"
+                            th:disabled="${book.quantity == null or book.quantity <= 0}">
+                        <span class="pd-btn-buy-text">Mua ngay</span>
+                    </button>
+                </div>
+            </div>
+            <div class="pd-cta-row pd-cta-row--single" sec:authorize="isAnonymous()">
+                <a class="pd-btn pd-btn-cart" th:href="@{/login}">
+                    <span class="pd-btn-ico">🔐</span> Đăng nhập để mua
+                </a>
+            </div>
+        </div>
+
+        <div class="pd-info">
+            <div class="pd-title-row">
+                <span class="pd-badge" th:text="${book.category.name}">Danh mục</span>
+                <h1 class="pd-title" th:text="${book.title}">Tên sách</h1>
+            </div>
+
+            <div class="pd-meta-grid">
+                <div>
+                    <span class="pd-meta-label">Nhà cung cấp</span>
+                    <span class="pd-meta-value">ComicStore</span>
+                </div>
+                <div>
+                    <span class="pd-meta-label">Tác giả</span>
+                    <span class="pd-meta-value" th:text="${book.author}">—</span>
+                </div>
+                <div>
+                    <span class="pd-meta-label">Nhà xuất bản</span>
+                    <span class="pd-meta-value muted">Theo từng ấn phẩm</span>
+                </div>
+                <div>
+                    <span class="pd-meta-label">Độ tuổi</span>
+                    <span class="pd-meta-value">Mọi lứa tuổi</span>
+                </div>
+            </div>
+
+            <div class="pd-rating-row">
+                <span class="pd-stars" aria-hidden="true">★★★★★</span>
+                <span class="pd-rating-muted">0 đánh giá</span>
+                <span class="pd-dot">·</span>
+                <span class="pd-sold">Đã bán <strong th:text="${soldCount}">0</strong></span>
+            </div>
+
+            <div class="pd-price-block">
+                <span class="pd-price-current" th:text="${#numbers.formatDecimal(book.price, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                <span class="pd-price-note">Giá đã gồm VAT · Miễn phí vận chuyển từ 200.000 đ</span>
+            </div>
+
+            <div class="pd-ship-box">
+                <div class="pd-ship-title">Thông tin vận chuyển</div>
+                <p class="pd-ship-line">
+                    <span class="pd-ship-icon">📍</span>
+                    Giao hàng toàn quốc
+                    <a th:href="@{/contact}" class="pd-link">Chi tiết</a>
+                </p>
+                <p class="pd-ship-line">
+                    <span class="pd-ship-icon pd-ship-green">🚚</span>
+                    Giao tiêu chuẩn — dự kiến 3–5 ngày làm việc
+                </p>
+            </div>
+
+            <div class="pd-voucher-block">
+                <div class="pd-voucher-head">
+                    <span>Ưu đãi liên quan</span>
+                    <a href="#" class="pd-link" onclick="return false;">Xem thêm &gt;</a>
+                </div>
+                <div class="pd-voucher-row">
+                    <div class="pd-voucher v1"><span>🎫</span> Mã giảm 10k</div>
+                    <div class="pd-voucher v2"><span>💳</span> Ưu đãi ví điện tử</div>
+                    <div class="pd-voucher v3"><span>✓</span> Freeship nội thành</div>
+                </div>
+            </div>
+
+            <div class="pd-desc-block">
+                <h2 class="pd-desc-title">Mô tả sách</h2>
+                <p class="pd-desc-body" th:text="${book.description != null and !#strings.isEmpty(book.description)} ? ${book.description} : 'Chưa có mô tả chi tiết.'">Mô tả</p>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        (function () {
+            var root = document.querySelector('.pd-page');
+            if (!root) return;
+            var max = parseInt(root.getAttribute('data-pd-max'), 10);
+            if (isNaN(max)) max = 0;
+            var display = document.getElementById('pd-qty-display');
+            var hidden = document.getElementById('pd-qty-hidden');
+            var redirectInput = document.getElementById('pd-redirect-hidden');
+            var form = document.getElementById('pd-cart-form');
+            var detailUrl = root.getAttribute('data-detail-url') || '';
+            var checkoutUrl = root.getAttribute('data-checkout-url') || '';
+
+            function qty() {
+                var n = parseInt(display.textContent, 10);
+                return isNaN(n) ? 1 : n;
+            }
+
+            function setQty(n) {
+                if (max <= 0) {
+                    if (display) display.textContent = '0';
+                    if (hidden) hidden.value = '0';
+                    syncBtnLabels();
+                    return;
+                }
+                n = Math.max(1, Math.min(max, n));
+                display.textContent = String(n);
+                if (hidden) hidden.value = String(n);
+                syncBtnLabels();
+            }
+
+            function syncBtnLabels() {
+                var q = max <= 0 ? 0 : qty();
+                var addEl = document.querySelector('.pd-btn-add-text');
+                var buyEl = document.querySelector('.pd-btn-buy-text');
+                if (addEl) addEl.textContent = 'Thêm vào giỏ hàng (' + q + ')';
+                if (buyEl) buyEl.textContent = 'Mua ngay (' + q + ')';
+            }
+
+            var minus = document.getElementById('pd-qty-minus');
+            var plus = document.getElementById('pd-qty-plus');
+            if (minus) minus.addEventListener('click', function () { setQty(qty() - 1); });
+            if (plus) plus.addEventListener('click', function () { setQty(qty() + 1); });
+            syncBtnLabels();
+
+            function submitCart(isBuy) {
+                if (!form || max <= 0) return;
+                setQty(qty());
+                if (redirectInput) redirectInput.value = isBuy ? checkoutUrl : detailUrl;
+                form.submit();
+            }
+
+            var btnAdd = document.getElementById('pd-btn-add');
+            var btnBuy = document.getElementById('pd-btn-buy');
+            if (btnAdd) btnAdd.addEventListener('click', function () { submitCart(false); });
+            if (btnBuy) btnBuy.addEventListener('click', function () { submitCart(true); });
+        })();
+    </script>
+</section>
+</html>

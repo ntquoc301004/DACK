@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/auth-layout :: authLayout(~{:: section}, 'Đăng ký · ComicStore')}">
+<body>
+<section class="auth-split">
+    <div class="auth-split-visual" aria-hidden="true">
+        <span class="auth-deco c1"></span>
+        <span class="auth-deco t1"></span>
+        <span class="auth-deco sq"></span>
+        <span class="auth-deco t2"></span>
+        <div class="auth-blob">
+            <svg class="auth-laptop-svg" viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="48" y="36" width="184" height="118" rx="10" fill="#4a4a4a"/>
+                <rect x="58" y="48" width="164" height="88" rx="4" fill="#3a3a3a"/>
+                <circle cx="140" cy="92" r="22" stroke="#fff" stroke-width="3" fill="none"/>
+                <path d="M140 104v12M128 98c4 8 8 12 12 12s8-4 12-12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path d="M76 166h128l-8 18H84l-8-18z" fill="#6d6d6d"/>
+                <rect x="40" y="162" width="200" height="8" rx="2" fill="#8a8a8a"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="auth-panel">
+        <h1 class="auth-title">Đăng ký thành viên</h1>
+        <p class="auth-sub">Tạo tài khoản để đặt mua truyện, quản lý giỏ hàng và đơn hàng.</p>
+
+        <form class="auth-form" th:action="@{/register}" method="post" th:object="${form}">
+            <div class="auth-field-group">
+                <div class="auth-field">
+                    <span class="auth-field-ico" aria-hidden="true">👤</span>
+                    <input type="text" th:field="*{username}" autocomplete="username" placeholder="Tên đăng nhập" required/>
+                </div>
+                <p class="auth-err" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+            </div>
+            <div class="auth-field-group">
+                <div class="auth-field">
+                    <span class="auth-field-ico" aria-hidden="true">🔒</span>
+                    <input type="password" th:field="*{password}" autocomplete="new-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required/>
+                </div>
+                <p class="auth-err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+            </div>
+            <div class="auth-field-group">
+                <div class="auth-field">
+                    <span class="auth-field-ico" aria-hidden="true">✉</span>
+                    <input type="email" th:field="*{email}" autocomplete="email" placeholder="Email" required/>
+                </div>
+                <p class="auth-err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+            </div>
+            <div class="auth-field-group">
+                <div class="auth-field">
+                    <span class="auth-field-ico" aria-hidden="true">📝</span>
+                    <input type="text" th:field="*{fullName}" autocomplete="name" placeholder="Họ và tên" required/>
+                </div>
+                <p class="auth-err" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></p>
+            </div>
+
+            <button type="submit" class="auth-submit">Tạo tài khoản</button>
+        </form>
+
+        <div class="auth-footer-row">
+            <a class="auth-alt-link" th:href="@{/login}">
+                Đã có tài khoản? Đăng nhập <span class="arr">→</span>
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

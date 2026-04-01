@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: adminLayout(~{:: main}, ~{:: scripts})}">
+<body>
+<main th:fragment="main" class="admin-books-page">
+    <div class="admin-flash success" th:if="${flash}" th:text="${flash}"></div>
+
+    <div class="admin-card admin-books-toolbar">
+        <div>
+            <h2 class="admin-books-title">Danh sách sách</h2>
+            <p class="admin-books-sub muted">Thêm, sửa hoặc xóa đầu sách trong cửa hàng</p>
+        </div>
+        <a class="admin-btn-primary" th:href="@{/admin/books/new}">
+            <span aria-hidden="true">+</span> Thêm sách
+        </a>
+    </div>
+
+    <div class="admin-card admin-table-card">
+        <div class="admin-table-wrap">
+            <table class="admin-data-table">
+                <thead>
+                <tr>
+                    <th>Tên sách</th>
+                    <th>Tác giả</th>
+                    <th>Danh mục</th>
+                    <th class="num">Giá</th>
+                    <th class="num">Tồn kho</th>
+                    <th class="actions">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="b : ${books.content}">
+                    <td th:text="${b.title}">Tên</td>
+                    <td th:text="${b.author}">Tác giả</td>
+                    <td th:text="${b.category.name}">DM</td>
+                    <td class="num" th:text="${#numbers.formatDecimal(b.price,1,'POINT',0,'COMMA')} + ' đ'">0 đ</td>
+                    <td class="num" th:text="${b.quantity ?: 0}">0</td>
+                    <td class="actions">
+                        <a class="admin-link-edit" th:href="@{'/admin/books/' + ${b.id} + '/edit'}">Sửa</a>
+                        <form th:action="@{'/admin/books/' + ${b.id} + '/delete'}" method="post" class="admin-inline-form"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa sách này?');">
+                            <button type="submit" class="admin-btn-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="admin-pagination" th:if="${books.totalPages > 1}">
+            <a th:classappend="${books.first} ? ' disabled' : ''"
+               th:href="@{/admin/books(page=${books.number - 1})}">Trước</a>
+            <span th:text="'Trang ' + (${books.number} + 1) + ' / ' + ${books.totalPages}">Trang</span>
+            <a th:classappend="${books.last} ? ' disabled' : ''"
+               th:href="@{/admin/books(page=${books.number + 1})}">Sau</a>
+        </div>
+    </div>
+</main>
+
+<th:block th:fragment="scripts"></th:block>
+</body>
+</html>
