@@ -1,50 +1,48 @@
 package DACK.cart;
 
+import DACK.model.User;
+import DACK.model.UserCartItem;
 import DACK.repo.BookRepository;
+import DACK.repo.UserCartItemRepository;
+import DACK.service.CurrentUserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
-    private static final String SESSION_KEY = "CART";
-
     private final BookRepository bookRepository;
-
-    @SuppressWarnings("unchecked")
-    private Map<Long, CartItem> cartMap(HttpSession session) {
-        Object existing = session.getAttribute(SESSION_KEY);
-        if (existing instanceof Map<?, ?>) {
-            return (Map<Long, CartItem>) existing;
-        }
-        Map<Long, CartItem> created = new LinkedHashMap<>();
-        session.setAttribute(SESSION_KEY, created);
-        return created;
-    }
+    private final UserCartItemRepository userCartItemRepository;
+    private final CurrentUserService currentUserService;
 
     public Collection<CartItem> items(HttpSession session) {
-        return cartMap(session).values();
+        User user = currentUserService.currentUserOrNull();
+        if (user == null) {
+            return List.of();
+        }
+        return userCartItemRepository.findByUserOrderByIdDesc(user).stream()
+                .map(this::toCartItem)
+                .toList();
     }
 
     public int countItems(HttpSession session) {
-        return cartMap(session).values().stream().mapToInt(CartItem::getQuantity).sum();
+        return items(session).stream().mapToInt(CartItem::getQuantity).sum();
     }
 
     public BigDecimal total(HttpSession session) {
-        return cartMap(session).values().stream()
+        return items(session).stream()
                 .map(CartItem::lineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void add(HttpSession session, Long bookId, int qty) {
         int addQty = Math.max(qty, 1);
-        Map<Long, CartItem> cart = cartMap(session);
+        User user = currentUserService.requireUser();
         var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách: " + bookId));
 
@@ -52,32 +50,34 @@ public class CartService {
             throw new IllegalStateException("Sách đã hết hàng");
         }
 
-        CartItem existing = cart.get(bookId);
+        UserCartItem existing = userCartItemRepository.findByUserIdAndBookId(user.getId(), bookId).orElse(null);
         if (existing != null) {
             int requested = existing.getQuantity() + addQty;
             if (requested > book.getQuantity()) {
                 throw new IllegalStateException("Số lượng vượt quá tồn kho");
             }
             existing.setQuantity(requested);
+            userCartItemRepository.save(existing);
             return;
         }
         if (addQty > book.getQuantity()) {
             throw new IllegalStateException("Số lượng vượt quá tồn kho");
         }
-        cart.put(bookId, new CartItem(
-                book.getId(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getImage(),
-                book.getPrice(),
-                addQty
-        ));
+        UserCartItem item = new UserCartItem();
+        item.setUser(user);
+        item.setBook(book);
+        item.setQuantity(addQty);
+        userCartItemRepository.save(item);
     }
 
     public void update(HttpSession session, Long bookId, int qty) {
-        Map<Long, CartItem> cart = cartMap(session);
+        User user = currentUserService.requireUser();
+        UserCartItem existing = userCartItemRepository.findByUserIdAndBookId(user.getId(), bookId).orElse(null);
+        if (existing == null) {
+            return;
+        }
         if (qty <= 0) {
-            cart.remove(bookId);
+            userCartItemRepository.delete(existing);
             return;
         }
         var book = bookRepository.findById(bookId)
@@ -85,18 +85,36 @@ public class CartService {
         if (qty > book.getQuantity()) {
             throw new IllegalStateException("Số lượng vượt quá tồn kho");
         }
-        CartItem existing = cart.get(bookId);
-        if (existing != null) {
-            existing.setQuantity(qty);
-        }
+        existing.setQuantity(qty);
+        userCartItemRepository.save(existing);
     }
 
     public void remove(HttpSession session, Long bookId) {
-        cartMap(session).remove(bookId);
+        User user = currentUserService.currentUserOrNull();
+        if (user == null) {
+            return;
+        }
+        userCartItemRepository.findByUserIdAndBookId(user.getId(), bookId)
+                .ifPresent(userCartItemRepository::delete);
     }
 
     public void clear(HttpSession session) {
-        cartMap(session).clear();
+        User user = currentUserService.currentUserOrNull();
+        if (user == null) {
+            return;
+        }
+        userCartItemRepository.deleteByUser(user);
+    }
+
+    private CartItem toCartItem(UserCartItem item) {
+        return new CartItem(
+                item.getBook().getId(),
+                item.getBook().getTitle(),
+                item.getBook().getAuthor(),
+                item.getBook().getImage(),
+                item.getBook().getPrice(),
+                item.getQuantity()
+        );
     }
 }
 

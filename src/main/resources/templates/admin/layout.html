@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${adminPageTitle} + ' · Quản trị'">Quản trị</title>
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/glacial-indifference"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     <link rel="icon" type="image/png" th:href="@{/images/logo.png}"/>
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}"/>
@@ -20,22 +21,22 @@
         <nav class="admin-nav">
             <a class="admin-nav-link" th:href="@{/admin/dashboard}"
                th:classappend="${adminNavActive == 'dashboard'} ? ' active' : ''">
-                <span class="admin-nav-ico">📊</span> Bảng điều khiển
+                <span class="admin-nav-ico"><i class="fa-solid fa-chart-line"></i></span> Bảng điều khiển
             </a>
             <a class="admin-nav-link" th:href="@{/admin/books}"
                th:classappend="${adminNavActive == 'books'} ? ' active' : ''">
-                <span class="admin-nav-ico">📚</span> Quản lý sách
+                <span class="admin-nav-ico"><i class="fa-solid fa-book"></i></span> Quản lý sách
             </a>
             <a class="admin-nav-link" th:href="@{/admin/categories}"
                th:classappend="${adminNavActive == 'categories'} ? ' active' : ''">
-                <span class="admin-nav-ico">🏷</span> Danh mục
+                <span class="admin-nav-ico"><i class="fa-solid fa-tags"></i></span> Danh mục
             </a>
             <a class="admin-nav-link" th:href="@{/admin/orders}"
                th:classappend="${adminNavActive == 'orders'} ? ' active' : ''">
-                <span class="admin-nav-ico">📋</span> Đơn hàng
+                <span class="admin-nav-ico"><i class="fa-regular fa-clipboard"></i></span> Đơn hàng
             </a>
             <a class="admin-nav-link" th:href="@{/home}">
-                <span class="admin-nav-ico">🏪</span> Xem cửa hàng
+                <span class="admin-nav-ico"><i class="fa-solid fa-store"></i></span> Xem cửa hàng
             </a>
         </nav>
         <form class="admin-logout" th:action="@{/logout}" method="post">
@@ -47,7 +48,7 @@
             <div>
                 <h1 class="admin-page-heading" th:text="${adminPageTitle}">Trang</h1>
                 <p class="admin-welcome">
-                    Xin chào <strong th:text="${adminDisplayName}">Admin</strong>, chào mừng trở lại 👋
+                    Xin chào <strong th:text="${adminDisplayName}">Admin</strong>, chào mừng trở lại
                 </p>
             </div>
             <div class="admin-topbar-actions">

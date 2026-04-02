@@ -13,12 +13,20 @@ public class CurrentUserService {
     private final UserRepository userRepository;
 
     public User requireUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null) {
+        User user = currentUserOrNull();
+        if (user == null) {
             throw new IllegalStateException("No authenticated user");
         }
+        return user;
+    }
+
+    public User currentUserOrNull() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null || "anonymousUser".equals(auth.getName())) {
+            return null;
+        }
         return userRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new IllegalStateException("User missing: " + auth.getName()));
+                .orElse(null);
     }
 }
 

@@ -8,14 +8,14 @@
             <a class="sf-cat-link"
                th:classappend="${selectedCategoryId == null} ? ' active'"
                th:href="@{/home(q=${q})}">
-                <span class="sf-cat-ico">📚</span>
+                <span class="sf-cat-ico"><i class="fa-solid fa-book-open"></i></span>
                 <span>Tất cả sách</span>
             </a>
             <a class="sf-cat-link"
                th:each="c : ${categories}"
                th:classappend="${selectedCategoryId != null and selectedCategoryId == c.id} ? ' active'"
                th:href="@{/home(q=${q}, categoryId=${c.id})}">
-                <span class="sf-cat-ico" th:text="${categoryIconById[c.id]}">📖</span>
+                <span class="sf-cat-ico"><i class="fa-solid fa-book"></i></span>
                 <span th:text="${c.name}">Danh mục</span>
             </a>
         </aside>
@@ -56,12 +56,14 @@
                  th:src="${dealBook.image}" alt="" loading="eager" decoding="sync"/>
             <div class="sf-deal-placeholder" th:unless="${dealBook.image != null and !#strings.isEmpty(dealBook.image)}">Ảnh bìa</div>
             <h3 class="sf-deal-title" th:text="${dealBook.title}">Tên sách</h3>
-            <div class="sf-stars">★★★★☆</div>
+            <div class="sf-stars" aria-label="4 trên 5 sao">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+            </div>
             <div class="sf-deal-price" th:text="${#numbers.formatDecimal(dealBook.price, 1, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</div>
             <p class="sf-deal-sold muted" th:text="'Đã bán ' + ${soldByBookId[dealBook.id]} + ' cuốn'">Đã bán 0 cuốn</p>
             <div class="sf-deal-actions">
                 <a class="sf-cta sf-cta-buy" th:href="@{'/books/' + ${dealBook.id}}">Mua hàng</a>
-                <form sec:authorize="hasRole('CUSTOMER')" th:action="@{'/cart/add/' + ${dealBook.id}}" method="post" class="sf-deal-cart-form">
+                <form sec:authorize="hasRole('CUSTOMER')" th:action="@{'/cart/add/' + ${dealBook.id}}" method="post" class="sf-deal-cart-form js-add-cart-ajax">
                     <input type="hidden" name="redirect" th:value="@{/home}"/>
                     <button type="submit" class="sf-cta sf-cta-cart"
                             th:disabled="${dealBook.quantity == null or dealBook.quantity <= 0}"
@@ -79,14 +81,14 @@
 
     <div class="sf-trust-row">
         <div class="sf-trust-box">
-            <span class="sf-trust-ico">🚚</span>
+            <span class="sf-trust-ico"><i class="fa-solid fa-truck-fast"></i></span>
             <div>
                 <strong>Miễn phí giao hàng</strong>
                 <span>Đơn từ 200.000 ₫ (minh họa)</span>
             </div>
         </div>
         <div class="sf-trust-box">
-            <span class="sf-trust-ico">💬</span>
+            <span class="sf-trust-ico"><i class="fa-regular fa-comments"></i></span>
             <div>
                 <strong>Chăm sóc khách hàng</strong>
                 <span>Hỗ trợ 24/7 qua hotline &amp; email</span>
@@ -126,7 +128,7 @@
                 <span class="sf-pcard-sold" th:text="'Đã bán ' + ${soldByBookId[b.id]} + ' cuốn'">Đã bán 0 cuốn</span>
                 <div class="sf-pcard-actions">
                     <a class="sf-cta sf-cta-buy" th:href="@{'/books/' + ${b.id}}">Mua hàng</a>
-                    <form sec:authorize="hasRole('CUSTOMER')" class="sf-pcard-cart-form" th:action="@{'/cart/add/' + ${b.id}}" method="post">
+                    <form sec:authorize="hasRole('CUSTOMER')" class="sf-pcard-cart-form js-add-cart-ajax" th:action="@{'/cart/add/' + ${b.id}}" method="post">
                         <input type="hidden" name="redirect"
                                th:value="@{/home(page=${books.number}, q=${q}, categoryId=${selectedCategoryId})}"/>
                         <button class="sf-cta sf-cta-cart sf-cta-full" type="submit"
