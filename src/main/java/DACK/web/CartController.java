@@ -3,13 +3,17 @@ package DACK.web;
 import DACK.cart.CartService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,17 +28,33 @@ public class CartController {
     }
 
     @PostMapping("/cart/add/{bookId}")
-    public String add(
+    public Object add(
             @PathVariable Long bookId,
             @RequestParam(name = "qty", defaultValue = "1") int qty,
             @RequestParam(name = "redirect", defaultValue = "/home") String redirect,
             HttpSession session,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
             RedirectAttributes redirectAttributes
     ) {
+        boolean ajax = "XMLHttpRequest".equalsIgnoreCase(requestedWith);
         try {
             cartService.add(session, bookId, qty);
+            if (ajax) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Đã thêm vào giỏ hàng",
+                        "cartItemCount", cartService.countItems(session)
+                ));
+            }
             redirectAttributes.addFlashAttribute("flash", "Đã thêm vào giỏ hàng");
         } catch (IllegalStateException ex) {
+            if (ajax) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", ex.getMessage(),
+                        "cartItemCount", cartService.countItems(session)
+                ));
+            }
             redirectAttributes.addFlashAttribute("flash", ex.getMessage());
         }
         return "redirect:" + redirect;
