@@ -35,7 +35,7 @@
             <div class="auth-field-group">
                 <div class="auth-field">
                     <span class="auth-field-ico" aria-hidden="true"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" th:field="*{password}" autocomplete="new-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required/>
+                    <input type="password" th:field="*{password}" autocomplete="new-password" placeholder="Mật khẩu: 8+ ký tự, hoa, thường, số, ký tự đặc biệt" required/>
                 </div>
                 <p class="auth-err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
             </div>
