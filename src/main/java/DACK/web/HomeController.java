@@ -38,7 +38,7 @@ public class HomeController {
             Model model
     ) {
         int safePage = Math.max(page, 0);
-        Pageable pageable = PageRequest.of(safePage, 6, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(safePage, 12, Sort.by(Sort.Direction.DESC, "id"));
         String keyword = q == null ? "" : q.trim();
         boolean hasKeyword = !keyword.isBlank();
         boolean hasCategory = categoryId != null;

@@ -1,8 +1,9 @@
 package DACK.web.dto;
 
+import DACK.validation.PasswordRules;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class ResetPasswordForm {
     @NotBlank(message = "Vui lòng nhập mật khẩu mới")
-    @Size(min = 6, max = 72, message = "Mật khẩu cần từ 6 đến 72 ký tự")
+    @Pattern(regexp = PasswordRules.REGEX, message = PasswordRules.MESSAGE)
     private String newPassword;
 
     @NotBlank(message = "Vui lòng nhập lại mật khẩu")

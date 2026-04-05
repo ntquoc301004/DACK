@@ -44,7 +44,7 @@ public class ProfileController {
     ) {
         User user = currentUserService.requireUser();
         String email = form.getEmail().trim();
-        if (!email.equals(user.getEmail()) && userRepository.existsByEmail(email)) {
+        if (!email.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmailIgnoreCase(email)) {
             bindingResult.rejectValue("email", "email.duplicate", "Email này đã được tài khoản khác sử dụng");
         }
         if (bindingResult.hasErrors()) {
