@@ -55,6 +55,24 @@
                         <span class="pd-btn-buy-text">Mua ngay</span>
                     </button>
                 </div>
+                <div class="pd-cta-row pd-cta-row--favorite" sec:authorize="hasRole('CUSTOMER')">
+                    <form th:if="${!isFavorite}" th:action="@{'/account/wishlist/add/' + ${book.id}}"
+                          method="post" class="pd-favorite-form">
+                        <input type="hidden" name="redirect" th:value="@{'/books/' + ${book.id}}"/>
+                        <button type="submit" class="pd-btn pd-btn-fav">
+                            <span class="pd-btn-ico"><i class="fa-solid fa-heart-circle-plus"></i></span>
+                            <span>Thêm vào yêu thích</span>
+                        </button>
+                    </form>
+                    <form th:if="${isFavorite}" th:action="@{'/account/wishlist/remove/' + ${book.id}}"
+                          method="post" class="pd-favorite-form">
+                        <input type="hidden" name="redirect" th:value="@{'/books/' + ${book.id}}"/>
+                        <button type="submit" class="pd-btn pd-btn-fav pd-btn-fav-remove">
+                            <span class="pd-btn-ico"><i class="fa-solid fa-heart"></i></span>
+                            <span>Gỡ yêu thích</span>
+                        </button>
+                    </form>
+                </div>
             </div>
             <div class="pd-cta-row pd-cta-row--single" sec:authorize="isAnonymous()">
                 <a class="pd-btn pd-btn-cart" th:href="@{/login}">

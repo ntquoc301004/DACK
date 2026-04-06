@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Danh sách yêu thích · ComicStore')}">
+<section>
+    <th:block th:replace="~{fragments/account-shell :: shell('wishlist', ~{:: #acc-body})}">
+        <div id="acc-body" class="acc-body">
+            <h2 class="acc-section-title">Danh sách yêu thích</h2>
+            <p class="acc-section-lead muted">Những cuốn sách bạn đã đánh dấu để mua sau.</p>
+
+            <div th:if="${#lists.isEmpty(favorites)}" class="empty">
+                Chưa có sách yêu thích. <a th:href="@{/home}">Tiếp tục xem sách</a>
+            </div>
+
+            <div th:if="${!#lists.isEmpty(favorites)}" class="wishlist-grid">
+                <div class="wishlist-item" th:each="book : ${favorites}">
+                    <div class="wishlist-media">
+                        <a th:href="@{/books/{id}(id=${book.id})}">
+                            <img th:if="${book.image != null and !#strings.isEmpty(book.image)}" th:src="${book.image}" th:alt="${book.title}"/>
+                            <div class="wishlist-placeholder" th:unless="${book.image != null and !#strings.isEmpty(book.image)}">No cover</div>
+                        </a>
+                    </div>
+                    <div class="wishlist-content">
+                        <h3><a th:href="@{/books/{id}(id=${book.id})}" th:text="${book.title}">Tên sách</a></h3>
+                        <p class="muted" th:text="${book.author}">Tác giả</p>
+                        <p class="wishlist-price" th:text="${#numbers.formatDecimal(book.price, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</p>
+                        <div class="wishlist-actions">
+                            <form th:action="@{'/cart/add/' + ${book.id}}" method="post" class="inline-form">
+                                <input type="hidden" name="qty" value="1"/>
+                                <input type="hidden" name="redirect" value="/account/wishlist"/>
+                                <button class="btn btn-primary" type="submit">Thêm vào giỏ hàng</button>
+                            </form>
+                            <form th:action="@{'/account/wishlist/remove/' + ${book.id}}" method="post" class="inline-form">
+                                <button class="btn btn-secondary" type="submit">Xóa</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</section>
+</html>
