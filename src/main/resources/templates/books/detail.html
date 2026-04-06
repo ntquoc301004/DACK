@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:with="detailTitle=${book.title} + ' · Chi tiết sách'"
+      th:with="detailTitle=${book.title} + ' · Chi tiet sach'"
       th:replace="~{fragments/layout :: layout(~{::section}, ${detailTitle})}">
 <section class="pd-page"
          th:attr="data-pd-max=${book.quantity != null ? book.quantity : 0},
                   data-detail-url=@{/books/{id}(id=${book.id})},
                   data-checkout-url=@{/checkout}">
     <nav class="pd-breadcrumb" aria-label="Breadcrumb">
-        <a th:href="@{/home}">Trang chủ</a>
+        <a th:href="@{/home}">Trang chu</a>
         <span class="pd-bc-sep">›</span>
-        <a th:href="@{/home(categoryId=${book.category.id})}" th:text="${book.category.name}">Danh mục</a>
+        <a th:href="@{/home(categoryId=${book.category.id})}" th:text="${book.category.name}">Danh muc</a>
         <span class="pd-bc-sep">›</span>
-        <span class="pd-bc-current" th:text="${book.title}">Sách</span>
+        <span class="pd-bc-current" th:text="${book.title}">Sach</span>
     </nav>
 
     <div class="pd-grid">
@@ -20,14 +20,14 @@
                 <img th:if="${book.image != null and !#strings.isEmpty(book.image)}"
                      class="pd-main-img" th:src="${book.image}" th:alt="${book.title}" loading="eager" decoding="sync"/>
                 <div class="pd-main-placeholder" th:unless="${book.image != null and !#strings.isEmpty(book.image)}">
-                    Chưa có ảnh bìa
+                    Chua co anh bia
                 </div>
             </div>
             <div class="pd-thumbs" th:if="${book.image != null and !#strings.isEmpty(book.image)}">
-                <button type="button" class="pd-thumb is-active" th:attr="aria-label='Ảnh 1'">
+                <button type="button" class="pd-thumb is-active" aria-label="Anh 1">
                     <img th:src="${book.image}" alt=""/>
                 </button>
-                <button type="button" class="pd-thumb" th:attr="aria-label='Ảnh 2'">
+                <button type="button" class="pd-thumb" aria-label="Anh 2">
                     <img th:src="${book.image}" alt=""/>
                 </button>
             </div>
@@ -38,17 +38,17 @@
                     <input type="hidden" name="redirect" id="pd-redirect-hidden" th:value="@{'/books/' + ${book.id}}"/>
                 </form>
                 <div class="pd-qty-near-actions">
-                    <span class="pd-qty-label">Số lượng</span>
+                    <span class="pd-qty-label">So luong</span>
                     <div class="pd-stepper">
-                        <button type="button" class="pd-step-btn" id="pd-qty-minus" aria-label="Giảm">−</button>
+                        <button type="button" class="pd-step-btn" id="pd-qty-minus" aria-label="Giam">-</button>
                         <span class="pd-step-val" id="pd-qty-display">1</span>
-                        <button type="button" class="pd-step-btn" id="pd-qty-plus" aria-label="Tăng">+</button>
+                        <button type="button" class="pd-step-btn" id="pd-qty-plus" aria-label="Tang">+</button>
                     </div>
                 </div>
                 <div class="pd-cta-row">
                     <button type="button" class="pd-btn pd-btn-cart" id="pd-btn-add"
                             th:disabled="${book.quantity == null or book.quantity <= 0}">
-                        <span class="pd-btn-ico"><i class="fa-solid fa-cart-plus"></i></span> <span class="pd-btn-add-text">Thêm vào giỏ hàng</span>
+                        <span class="pd-btn-ico"><i class="fa-solid fa-cart-plus"></i></span> <span class="pd-btn-add-text">Them vao gio hang</span>
                     </button>
                     <button type="button" class="pd-btn pd-btn-buy" id="pd-btn-buy"
                             th:disabled="${book.quantity == null or book.quantity <= 0}">
@@ -58,33 +58,33 @@
             </div>
             <div class="pd-cta-row pd-cta-row--single" sec:authorize="isAnonymous()">
                 <a class="pd-btn pd-btn-cart" th:href="@{/login}">
-                    <span class="pd-btn-ico"><i class="fa-solid fa-lock"></i></span> Đăng nhập để mua
+                    <span class="pd-btn-ico"><i class="fa-solid fa-lock"></i></span> Dang nhap de mua
                 </a>
             </div>
         </div>
 
         <div class="pd-info">
             <div class="pd-title-row">
-                <span class="pd-badge" th:text="${book.category.name}">Danh mục</span>
-                <h1 class="pd-title" th:text="${book.title}">Tên sách</h1>
+                <span class="pd-badge" th:text="${book.category.name}">Danh muc</span>
+                <h1 class="pd-title" th:text="${book.title}">Ten sach</h1>
             </div>
 
             <div class="pd-meta-grid">
                 <div>
-                    <span class="pd-meta-label">Nhà cung cấp</span>
+                    <span class="pd-meta-label">Nha cung cap</span>
                     <span class="pd-meta-value">ComicStore</span>
                 </div>
                 <div>
-                    <span class="pd-meta-label">Tác giả</span>
-                    <span class="pd-meta-value" th:text="${book.author}">—</span>
+                    <span class="pd-meta-label">Tac gia</span>
+                    <span class="pd-meta-value" th:text="${book.author}">-</span>
                 </div>
                 <div>
-                    <span class="pd-meta-label">Nhà xuất bản</span>
-                    <span class="pd-meta-value muted">Theo từng ấn phẩm</span>
+                    <span class="pd-meta-label">Nha xuat ban</span>
+                    <span class="pd-meta-value muted">Theo tung an pham</span>
                 </div>
                 <div>
-                    <span class="pd-meta-label">Độ tuổi</span>
-                    <span class="pd-meta-value">Mọi lứa tuổi</span>
+                    <span class="pd-meta-label">Do tuoi</span>
+                    <span class="pd-meta-value">Moi lua tuoi</span>
                 </div>
             </div>
 
@@ -92,44 +92,120 @@
                 <span class="pd-stars" aria-hidden="true">
                     <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                 </span>
-                <span class="pd-rating-muted">0 đánh giá</span>
+                <span class="pd-rating-muted" th:text="${#numbers.formatDecimal(averageRating, 1, 1) + ' / 5 - ' + reviewCount + ' danh gia'}">0 / 5 - 0 danh gia</span>
                 <span class="pd-dot">·</span>
-                <span class="pd-sold">Đã bán <strong th:text="${soldCount}">0</strong></span>
+                <span class="pd-sold">Da ban <strong th:text="${soldCount}">0</strong></span>
             </div>
 
             <div class="pd-price-block">
-                <span class="pd-price-current" th:text="${#numbers.formatDecimal(book.price, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
-                <span class="pd-price-note">Giá đã gồm VAT · Miễn phí vận chuyển từ 200.000 đ</span>
+                <span class="pd-price-current" th:text="${#numbers.formatDecimal(book.price, 1, 'POINT', 0, 'COMMA')} + ' d'">0 d</span>
+                <span class="pd-price-note">Gia da gom VAT · Mien phi van chuyen tu 200.000 d</span>
             </div>
 
             <div class="pd-ship-box">
-                <div class="pd-ship-title">Thông tin vận chuyển</div>
+                <div class="pd-ship-title">Thong tin van chuyen</div>
                 <p class="pd-ship-line">
                     <span class="pd-ship-icon"><i class="fa-solid fa-location-dot"></i></span>
-                    Giao hàng toàn quốc
-                    <a th:href="@{/contact}" class="pd-link">Chi tiết</a>
+                    Giao hang toan quoc
+                    <a th:href="@{/contact}" class="pd-link">Chi tiet</a>
                 </p>
                 <p class="pd-ship-line">
                     <span class="pd-ship-icon pd-ship-green"><i class="fa-solid fa-truck-fast"></i></span>
-                    Giao tiêu chuẩn — dự kiến 3–5 ngày làm việc
+                    Giao tieu chuan - du kien 3-5 ngay lam viec
                 </p>
             </div>
 
             <div class="pd-voucher-block">
                 <div class="pd-voucher-head">
-                    <span>Ưu đãi liên quan</span>
-                    <a href="#" class="pd-link" onclick="return false;">Xem thêm &gt;</a>
+                    <span>Uu dai lien quan</span>
+                    <a href="#" class="pd-link" onclick="return false;">Xem them ></a>
                 </div>
                 <div class="pd-voucher-row">
-                    <div class="pd-voucher v1"><span><i class="fa-solid fa-ticket"></i></span> Mã giảm 10k</div>
-                    <div class="pd-voucher v2"><span><i class="fa-regular fa-credit-card"></i></span> Ưu đãi ví điện tử</div>
-                    <div class="pd-voucher v3"><span><i class="fa-solid fa-check"></i></span> Freeship nội thành</div>
+                    <div class="pd-voucher v1"><span><i class="fa-solid fa-ticket"></i></span> Ma giam 10k</div>
+                    <div class="pd-voucher v2"><span><i class="fa-regular fa-credit-card"></i></span> Uu dai vi dien tu</div>
+                    <div class="pd-voucher v3"><span><i class="fa-solid fa-check"></i></span> Freeship noi thanh</div>
                 </div>
             </div>
 
             <div class="pd-desc-block">
-                <h2 class="pd-desc-title">Mô tả sách</h2>
-                <p class="pd-desc-body" th:text="${book.description != null and !#strings.isEmpty(book.description)} ? ${book.description} : 'Chưa có mô tả chi tiết.'">Mô tả</p>
+                <h2 class="pd-desc-title">Mo ta sach</h2>
+                <p class="pd-desc-body" th:text="${book.description != null and !#strings.isEmpty(book.description)} ? ${book.description} : 'Chua co mo ta chi tiet.'">Mo ta</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="pd-review-section">
+        <div class="pd-review-summary">
+            <div class="pd-review-summary-score">
+                <strong th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</strong>
+                <span>/ 5</span>
+            </div>
+            <div class="pd-review-summary-meta">
+                <h2>Danh gia tu khach hang</h2>
+                <p th:text="${reviewCount} + ' luot danh gia cho sach nay'">0 luot danh gia cho sach nay</p>
+            </div>
+        </div>
+
+        <div class="pd-review-grid">
+            <div class="pd-review-form-card">
+                <h3 th:text="${existingReview != null} ? 'Cap nhat danh gia cua ban' : 'Viet danh gia'">Viet danh gia</h3>
+
+                <div sec:authorize="isAnonymous()" class="pd-review-hint">
+                    Dang nhap va mua sach de gui danh gia.
+                    <a th:href="@{/login}" class="pd-link">Dang nhap</a>
+                </div>
+
+                <div sec:authorize="hasRole('CUSTOMER')" th:if="${!canReview}" class="pd-review-hint">
+                    Ban can co don hang da thanh toan hoac da duyet cho sach nay truoc khi danh gia.
+                </div>
+
+                <form sec:authorize="hasRole('CUSTOMER')"
+                      th:if="${canReview}"
+                      th:action="@{'/books/' + ${book.id} + '/reviews'}"
+                      th:object="${reviewForm}"
+                      method="post"
+                      class="pd-review-form">
+                    <label class="pd-review-label">So sao</label>
+                    <div class="pd-review-stars-input">
+                        <label th:each="star : ${#numbers.sequence(1,5)}" class="pd-review-star-option">
+                            <input type="radio" th:field="*{rating}" th:value="${star}"/>
+                            <span th:text="${star} + ' sao'">1 sao</span>
+                        </label>
+                    </div>
+                    <p class="field-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></p>
+
+                    <label class="pd-review-label" for="reviewComment">Nhan xet</label>
+                    <textarea id="reviewComment" th:field="*{comment}" rows="5"
+                              placeholder="Chia se cam nhan cua ban ve noi dung, chat luong sach, dong goi..."></textarea>
+                    <p class="field-error" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></p>
+
+                    <button type="submit" class="sf-cta sf-cta-buy"
+                            th:text="${existingReview != null} ? 'Cap nhat danh gia' : 'Gui danh gia'">Gui danh gia</button>
+                </form>
+            </div>
+
+            <div class="pd-review-list-card">
+                <h3>Danh sach danh gia</h3>
+                <div class="pd-review-empty" th:if="${#lists.isEmpty(reviews)}">
+                    Chua co danh gia nao cho sach nay.
+                </div>
+                <div class="pd-review-list" th:if="${!#lists.isEmpty(reviews)}">
+                    <article class="pd-review-item" th:each="review : ${reviews}">
+                        <div class="pd-review-item-head">
+                            <div>
+                                <strong th:text="${review.user.fullName}">Nguyen Van A</strong>
+                                <div class="pd-review-item-stars">
+                                    <th:block th:each="star : ${#numbers.sequence(1,5)}">
+                                        <i class="fa-star"
+                                           th:classappend="${star <= review.rating} ? 'fa-solid' : 'fa-regular'"></i>
+                                    </th:block>
+                                </div>
+                            </div>
+                            <span class="pd-review-date" th:text="${#temporals.format(review.updatedAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                        </div>
+                        <p class="pd-review-comment" th:text="${review.comment != null and !#strings.isEmpty(review.comment)} ? ${review.comment} : 'Khach hang nay chi cham diem, khong de lai binh luan.'">Noi dung</p>
+                    </article>
+                </div>
             </div>
         </div>
     </div>
@@ -169,7 +245,7 @@
                 var q = max <= 0 ? 0 : qty();
                 var addEl = document.querySelector('.pd-btn-add-text');
                 var buyEl = document.querySelector('.pd-btn-buy-text');
-                if (addEl) addEl.textContent = 'Thêm vào giỏ hàng (' + q + ')';
+                if (addEl) addEl.textContent = 'Them vao gio hang (' + q + ')';
                 if (buyEl) buyEl.textContent = 'Mua ngay (' + q + ')';
             }
 

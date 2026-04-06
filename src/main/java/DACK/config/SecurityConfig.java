@@ -5,6 +5,7 @@ import DACK.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
@@ -72,6 +73,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler loginSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/books/*/reviews").hasRole(RoleName.CUSTOMER.name())
                         .requestMatchers("/", "/home", "/about", "/news", "/books/**", "/contact", "/register", "/login",
                                 "/forgot-password", "/reset-password", "/css/**", "/images/**", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(RoleName.ADMIN.name())

@@ -22,4 +22,18 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     @Query("SELECT d.book.id, COALESCE(SUM(d.quantity), 0) FROM OrderDetail d JOIN d.order o WHERE o.status IN :statuses AND d.book.id IN :ids GROUP BY d.book.id")
     List<Object[]> sumSoldQuantityGroupedByBookIdIn(@Param("ids") List<Long> ids, @Param("statuses") Collection<OrderStatus> statuses);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+            FROM OrderDetail d
+            JOIN d.order o
+            WHERE d.book.id = :bookId
+              AND o.user.id = :userId
+              AND o.status IN :statuses
+            """)
+    boolean existsPurchasedBookByUser(
+            @Param("bookId") Long bookId,
+            @Param("userId") Long userId,
+            @Param("statuses") Collection<OrderStatus> statuses
+    );
 }
