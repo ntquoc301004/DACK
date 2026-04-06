@@ -60,16 +60,17 @@
                 <h3 class="checkout-payment-title">Phương thức thanh toán</h3>
                 <div class="checkout-payment-list">
                     <label class="checkout-payment-item">
-                        <input type="radio" name="paymentMethod" value="MOMO"/>
+                        <input type="radio" th:field="*{paymentMethod}" value="MOMO"/>
                         <span class="checkout-payment-ico checkout-payment-ico-momo">MoMo</span>
                         <span class="checkout-payment-name">Ví MoMo</span>
                     </label>
                     <label class="checkout-payment-item">
-                        <input type="radio" name="paymentMethod" value="COD" checked/>
+                        <input type="radio" th:field="*{paymentMethod}" value="COD"/>
                         <span class="checkout-payment-ico checkout-payment-ico-cash">💵</span>
-                        <span class="checkout-payment-name">Thanh toán bằng tiền mặt khi nhận hàng</span>
+                        <span class="checkout-payment-name">Thanh toán tiền mặt khi nhận hàng</span>
                     </label>
                 </div>
+                <p class="field-error" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></p>
             </div>
 
             <div class="checkout-summary-inline">
@@ -93,9 +94,13 @@
                 </div>
             </div>
 
+            <div th:if="${cartHasIssues}" class="alert warning">
+                Sản phẩm trong giỏ có số lượng không đủ. Vui lòng quay lại giỏ hàng để cập nhật trước khi đặt.
+            </div>
+
             <div class="actions-bar checkout-actions">
                 <a th:href="@{/cart}">← Quay lại giỏ hàng</a>
-                <button class="primary btn-with-icon" type="submit"><span class="btn-ico">✅</span><span>Đặt hàng</span></button>
+                <button class="primary btn-with-icon" type="submit" th:disabled="${cartHasIssues}"><span class="btn-ico">✅</span><span>Đặt hàng</span></button>
             </div>
         </form>
     </div>

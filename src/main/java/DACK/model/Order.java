@@ -1,5 +1,6 @@
 package DACK.model;
 
+import DACK.model.PaymentMethod;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -35,6 +36,10 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
     private OrderStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false, length = 32)
+    private PaymentMethod paymentMethod;
 
     /** Snapshot địa chỉ giao hàng tại thời điểm đặt (đơn cũ có thể null). */
     @Column(name = "ship_recipient_name", length = 120)
