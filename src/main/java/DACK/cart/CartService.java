@@ -8,6 +8,7 @@ import DACK.service.CurrentUserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -40,6 +41,7 @@ public class CartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    @Transactional
     public void add(HttpSession session, Long bookId, int qty) {
         int addQty = Math.max(qty, 1);
         User user = currentUserService.requireUser();
@@ -70,6 +72,7 @@ public class CartService {
         userCartItemRepository.save(item);
     }
 
+    @Transactional
     public void update(HttpSession session, Long bookId, int qty) {
         User user = currentUserService.requireUser();
         UserCartItem existing = userCartItemRepository.findByUserIdAndBookId(user.getId(), bookId).orElse(null);
@@ -89,6 +92,7 @@ public class CartService {
         userCartItemRepository.save(existing);
     }
 
+    @Transactional
     public void remove(HttpSession session, Long bookId) {
         User user = currentUserService.currentUserOrNull();
         if (user == null) {
@@ -98,6 +102,7 @@ public class CartService {
                 .ifPresent(userCartItemRepository::delete);
     }
 
+    @Transactional
     public void clear(HttpSession session) {
         User user = currentUserService.currentUserOrNull();
         if (user == null) {

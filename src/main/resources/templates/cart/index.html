@@ -1,54 +1,86 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout(~{::section}, 'Giỏ hàng')}">
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Gio hang')}">
 <section class="cart-page">
-    <h1 class="page-title">Giỏ hàng của bạn</h1>
+    <h1 class="page-title">Gio hang cua ban</h1>
 
     <div th:if="${#lists.isEmpty(items)}" class="empty">
-        Giỏ hàng đang trống. <a th:href="@{/home}">Tiếp tục mua sắm</a>
+        Gio hang dang trong. <a th:href="@{/home}">Tiep tuc mua sam</a>
     </div>
 
     <div th:if="${!#lists.isEmpty(items)}" class="table cart-table">
         <div class="row header">
-            <div>Sách</div>
-            <div class="right">Đơn giá</div>
+            <div>Sach</div>
+            <div class="right">Don gia</div>
             <div class="right">SL</div>
-            <div class="right">Thành tiền</div>
+            <div class="right">Thanh tien</div>
             <div></div>
         </div>
         <div class="row" th:each="i : ${items}">
             <div>
-                <div class="strong" th:text="${i.title}">Tiêu đề</div>
-                <div class="muted" th:text="${i.author}">Tác giả</div>
+                <div class="strong" th:text="${i.title}">Tieu de</div>
+                <div class="muted" th:text="${i.author}">Tac gia</div>
             </div>
-            <div class="right" th:text="${#numbers.formatDecimal(i.unitPrice,1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
+            <div class="right" th:text="${#numbers.formatDecimal(i.unitPrice,1,'POINT',0,'COMMA')} + ' d'">0 d</div>
             <div class="right">
                 <form th:action="@{'/cart/update/' + ${i.bookId}}" method="post" class="inline">
                     <input class="qty" type="number" name="qty" min="0" th:value="${i.quantity}"/>
-                    <button class="btn-with-icon" type="submit"><span class="btn-ico">↻</span><span>Cập nhật</span></button>
+                    <button class="btn-with-icon" type="submit"><span class="btn-ico">↻</span><span>Cap nhat</span></button>
                 </form>
             </div>
-            <div class="right" th:text="${#numbers.formatDecimal(i.lineTotal(),1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
+            <div class="right" th:text="${#numbers.formatDecimal(i.lineTotal(),1,'POINT',0,'COMMA')} + ' d'">0 d</div>
             <div class="right">
                 <form th:action="@{'/cart/remove/' + ${i.bookId}}" method="post">
-                    <button class="danger btn-with-icon" type="submit"><span class="btn-ico">✕</span><span>Xóa</span></button>
+                    <button class="danger btn-with-icon" type="submit"><span class="btn-ico">✕</span><span>Xoa</span></button>
                 </form>
             </div>
         </div>
 
         <div class="row footer">
-            <div></div><div></div><div class="right strong">Tổng cộng</div>
-            <div class="right strong" th:text="${#numbers.formatDecimal(total,1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
+            <div></div><div></div><div class="right strong">Tong cong</div>
+            <div class="right strong" th:text="${#numbers.formatDecimal(total,1,'POINT',0,'COMMA')} + ' d'">0 d</div>
             <div></div>
+        </div>
+    </div>
+
+    <div class="cart-coupon-card" th:if="${!#lists.isEmpty(items)}">
+        <div class="cart-coupon-head">
+            <div>
+                <h2>Coupon / Discount</h2>
+                <p class="muted">Ma mau: <strong>SAVE10</strong>, <strong>LESS30K</strong>, <strong>BOOK50K</strong></p>
+            </div>
+            <form th:if="${pricing.hasDiscount()}" th:action="@{/cart/coupon/remove}" method="post">
+                <button class="danger" type="submit">Go ma</button>
+            </form>
+        </div>
+
+        <form class="cart-coupon-form" th:action="@{/cart/coupon}" method="post">
+            <input type="text" name="code" placeholder="Nhap ma giam gia" th:value="${pricing.couponCode}"/>
+            <button class="primary" type="submit">Ap dung</button>
+        </form>
+
+        <div class="cart-pricing-box">
+            <div class="cart-pricing-row">
+                <span>Tam tinh</span>
+                <strong th:text="${#numbers.formatDecimal(pricing.subtotal,1,'POINT',0,'COMMA')} + ' d'">0 d</strong>
+            </div>
+            <div class="cart-pricing-row" th:if="${pricing.hasDiscount()}">
+                <span th:text="${'Giam gia (' + pricing.couponCode + ')'}">Giam gia</span>
+                <strong class="text-discount" th:text="'- ' + ${#numbers.formatDecimal(pricing.discountAmount,1,'POINT',0,'COMMA')} + ' d'">- 0 d</strong>
+            </div>
+            <p class="muted cart-coupon-note" th:if="${pricing.hasDiscount()}" th:text="${pricing.couponDescription}">Mo ta ma</p>
+            <div class="cart-pricing-row total">
+                <span>Thanh tien</span>
+                <strong th:text="${#numbers.formatDecimal(pricing.total,1,'POINT',0,'COMMA')} + ' d'">0 d</strong>
+            </div>
         </div>
     </div>
 
     <div class="actions-bar cart-actions" th:if="${!#lists.isEmpty(items)}">
         <form th:action="@{/cart/clear}" method="post">
-            <button class="danger btn-with-icon" type="submit"><span class="btn-ico">🗑</span><span>Xóa giỏ hàng</span></button>
+            <button class="danger btn-with-icon" type="submit"><span class="btn-ico">🗑</span><span>Xoa gio hang</span></button>
         </form>
-        <a class="primary btn-with-icon" th:href="@{/checkout}"><span class="btn-ico">💳</span><span>Tiến hành thanh toán</span></a>
+        <a class="primary btn-with-icon" th:href="@{/checkout}"><span class="btn-ico">💳</span><span>Tien hanh thanh toan</span></a>
     </div>
 </section>
 </html>
-

@@ -1,6 +1,7 @@
 package DACK.web;
 
 import DACK.cart.CartService;
+import DACK.discount.CouponService;
 import DACK.model.Order;
 import DACK.model.OrderDetail;
 import DACK.model.OrderStatus;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.math.BigDecimal;
-
 @Controller
 @RequiredArgsConstructor
 public class CheckoutController {
@@ -28,6 +27,7 @@ public class CheckoutController {
     private final CurrentUserService currentUserService;
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
+    private final CouponService couponService;
 
     @GetMapping("/checkout")
     public String checkout(HttpSession session, Model model) {
@@ -42,8 +42,7 @@ public class CheckoutController {
         form.setNote("");
 
         model.addAttribute("addressForm", form);
-        model.addAttribute("items", cartService.items(session));
-        model.addAttribute("total", cartService.total(session));
+        populateCheckoutModel(session, model);
         return "checkout/index";
     }
 
@@ -56,14 +55,18 @@ public class CheckoutController {
             RedirectAttributes redirectAttributes
     ) {
         var items = cartService.items(session);
+        var subtotal = cartService.total(session);
+        var pricing = couponService.summarize(session, subtotal);
+
         if (items.isEmpty()) {
-            redirectAttributes.addFlashAttribute("flash", "Giỏ hàng đang trống");
+            redirectAttributes.addFlashAttribute("flash", "Gio hang dang trong");
             return "redirect:/cart";
         }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("items", items);
-            model.addAttribute("total", cartService.total(session));
+            model.addAttribute("total", subtotal);
+            model.addAttribute("pricing", pricing);
             return "checkout/index";
         }
 
@@ -77,15 +80,13 @@ public class CheckoutController {
         order.setShipStreetDetail(addressForm.getStreetDetail().trim());
         order.setShipNote(addressForm.getNote() != null && !addressForm.getNote().isBlank()
                 ? addressForm.getNote().trim() : null);
-        // Đơn mới: chưa thanh toán; tồn kho đã trừ để giữ chỗ. Admin xác nhận PAID khi đã thu tiền.
         order.setStatus(OrderStatus.PENDING);
 
-        BigDecimal total = BigDecimal.ZERO;
         for (var item : items) {
             var book = bookRepository.findById(item.getBookId())
-                    .orElseThrow(() -> new IllegalStateException("Không tìm thấy sách: " + item.getBookId()));
+                    .orElseThrow(() -> new IllegalStateException("Khong tim thay sach: " + item.getBookId()));
             if (book.getQuantity() == null || book.getQuantity() < item.getQuantity()) {
-                redirectAttributes.addFlashAttribute("flash", "Số lượng tồn kho không đủ cho sách: " + book.getTitle());
+                redirectAttributes.addFlashAttribute("flash", "So luong ton kho khong du cho sach: " + book.getTitle());
                 return "redirect:/cart";
             }
 
@@ -96,18 +97,30 @@ public class CheckoutController {
             d.setPrice(item.getUnitPrice());
 
             order.getDetails().add(d);
-            total = total.add(item.lineTotal());
 
             book.setQuantity(book.getQuantity() - item.getQuantity());
             bookRepository.save(book);
         }
-        order.setTotalPrice(total);
+
+        order.setSubtotalPrice(pricing.getSubtotal());
+        order.setDiscountAmount(pricing.getDiscountAmount());
+        order.setCouponCode(pricing.getCouponCode());
+        order.setCouponDescription(pricing.getCouponDescription());
+        order.setTotalPrice(pricing.getTotal());
 
         orderRepository.save(order);
         cartService.clear(session);
+        couponService.clear(session);
 
-        redirectAttributes.addFlashAttribute("flash", "Đặt hàng thành công");
+        redirectAttributes.addFlashAttribute("flash", "Dat hang thanh cong");
         return "redirect:/orders";
     }
-}
 
+    private void populateCheckoutModel(HttpSession session, Model model) {
+        var items = cartService.items(session);
+        var total = cartService.total(session);
+        model.addAttribute("items", items);
+        model.addAttribute("total", total);
+        model.addAttribute("pricing", couponService.summarize(session, total));
+    }
+}

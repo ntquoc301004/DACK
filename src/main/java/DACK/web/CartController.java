@@ -1,69 +1,58 @@
 package DACK.web;
 
 import DACK.cart.CartService;
+import DACK.discount.CouponService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 
 @Controller
-@RequiredArgsConstructor // Tự động tạo Constructor cho các field 'final' (Dependency Injection)
+@RequiredArgsConstructor
 public class CartController {
-    
-    private final CartService cartService;
 
-    /**
-     * Hiển thị trang giỏ hàng
-     */
+    private final CartService cartService;
+    private final CouponService couponService;
+
     @GetMapping("/cart")
     public String cart(HttpSession session, Model model) {
-        // Lấy danh sách sản phẩm và tổng tiền từ Service rồi đẩy vào Model để hiển thị ở giao diện (Thymeleaf)
-        model.addAttribute("items", cartService.items(session));
-        model.addAttribute("total", cartService.total(session));
-        return "cart/index"; // Trả về file HTML tại src/main/resources/templates/cart/index.html
+        populateCartModel(session, model);
+        return "cart/index";
     }
 
-    /**
-     * Thêm sản phẩm vào giỏ hàng
-     * Hỗ trợ cả Request thông thường và Ajax
-     */
     @PostMapping("/cart/add/{bookId}")
     public Object add(
-            @PathVariable Long bookId, // ID của sách lấy từ URL
-            @RequestParam(name = "qty", defaultValue = "1") int qty, // Số lượng, mặc định là 1
-            @RequestParam(name = "redirect", defaultValue = "/home") String redirect, // Trang cần quay lại sau khi thêm
+            @PathVariable Long bookId,
+            @RequestParam(name = "qty", defaultValue = "1") int qty,
+            @RequestParam(name = "redirect", defaultValue = "/home") String redirect,
             HttpSession session,
-            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith, // Kiểm tra xem có phải gọi bằng Ajax không
-            RedirectAttributes redirectAttributes // Dùng để gửi thông báo (flash message) khi chuyển trang
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
+            RedirectAttributes redirectAttributes
     ) {
-        // Kiểm tra nếu request là Ajax (XMLHttpRequest)
         boolean ajax = "XMLHttpRequest".equalsIgnoreCase(requestedWith);
-        
+
         try {
-            cartService.add(session, bookId, qty); // Gọi logic thêm vào giỏ hàng
-            
+            cartService.add(session, bookId, qty);
+
             if (ajax) {
-                // Nếu là Ajax: Trả về JSON để Frontend xử lý mà không cần load lại trang
                 return ResponseEntity.ok(Map.of(
                         "success", true,
-                        "message", "Đã thêm vào giỏ hàng",
+                        "message", "Da them vao gio hang",
                         "cartItemCount", cartService.countItems(session)
                 ));
             }
-            // Nếu là Request thông thường: Hiển thị thông báo tạm thời
-            redirectAttributes.addFlashAttribute("flash", "Đã thêm vào giỏ hàng");
-            
+            redirectAttributes.addFlashAttribute("flash", "Da them vao gio hang");
+
         } catch (IllegalStateException ex) {
-            // Xử lý lỗi (ví dụ: hết hàng, số lượng không hợp lệ)
             if (ajax) {
                 return ResponseEntity.badRequest().body(Map.of(
                         "success", false,
@@ -73,40 +62,73 @@ public class CartController {
             }
             redirectAttributes.addFlashAttribute("flash", ex.getMessage());
         }
-        
-        // Quay lại trang trước đó hoặc trang mặc định
+
         return "redirect:" + redirect;
     }
 
-    /**
-     * Cập nhật số lượng sản phẩm trong giỏ
-     */
     @PostMapping("/cart/update/{bookId}")
-    public String update(@PathVariable Long bookId, @RequestParam("qty") int qty, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String update(
+            @PathVariable Long bookId,
+            @RequestParam("qty") int qty,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
         try {
             cartService.update(session, bookId, qty);
         } catch (IllegalStateException ex) {
-            // Lưu thông báo lỗi nếu cập nhật thất bại (ví dụ: vượt quá kho)
             redirectAttributes.addFlashAttribute("flash", ex.getMessage());
         }
-        return "redirect:/cart"; // Cập nhật xong quay lại trang giỏ hàng
+        return "redirect:/cart";
     }
 
-    /**
-     * Xóa một sản phẩm khỏi giỏ hàng
-     */
+    @PostMapping("/cart/coupon")
+    public String applyCoupon(
+            @RequestParam("code") String code,
+            @RequestParam(name = "redirect", defaultValue = "/cart") String redirect,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        var result = couponService.applyCoupon(session, cartService.total(session), code);
+        redirectAttributes.addFlashAttribute("flash", result.message());
+        return "redirect:" + safeRedirect(redirect);
+    }
+
+    @PostMapping("/cart/coupon/remove")
+    public String removeCoupon(
+            @RequestParam(name = "redirect", defaultValue = "/cart") String redirect,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        couponService.removeCoupon(session);
+        redirectAttributes.addFlashAttribute("flash", "Da go ma giam gia.");
+        return "redirect:" + safeRedirect(redirect);
+    }
+
     @PostMapping("/cart/remove/{bookId}")
     public String remove(@PathVariable Long bookId, HttpSession session) {
         cartService.remove(session, bookId);
         return "redirect:/cart";
     }
 
-    /**
-     * Xóa sạch toàn bộ giỏ hàng
-     */
     @PostMapping("/cart/clear")
     public String clear(HttpSession session) {
         cartService.clear(session);
+        couponService.clear(session);
         return "redirect:/cart";
+    }
+
+    private void populateCartModel(HttpSession session, Model model) {
+        var items = cartService.items(session);
+        var total = cartService.total(session);
+        model.addAttribute("items", items);
+        model.addAttribute("total", total);
+        model.addAttribute("pricing", couponService.summarize(session, total));
+    }
+
+    private String safeRedirect(String redirect) {
+        if ("/checkout".equals(redirect)) {
+            return "/checkout";
+        }
+        return "/cart";
     }
 }

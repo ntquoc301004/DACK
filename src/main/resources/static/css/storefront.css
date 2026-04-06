@@ -992,6 +992,79 @@ a.sf-cta-buy:hover {
     border-radius: 14px;
 }
 
+.cart-coupon-card {
+    margin-top: 18px;
+    background: #fff;
+    border: 1px solid var(--sf-border);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.cart-coupon-head,
+.checkout-coupon-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.cart-coupon-head h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+}
+
+.cart-coupon-form,
+.checkout-coupon-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.cart-coupon-form input,
+.checkout-coupon-form input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #ccd3dd;
+    border-radius: 10px;
+    font: inherit;
+}
+
+.cart-pricing-box,
+.checkout-coupon-box {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--sf-border);
+}
+
+.cart-pricing-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.cart-pricing-row:first-child {
+    margin-top: 0;
+}
+
+.cart-pricing-row.total {
+    padding-top: 10px;
+    border-top: 1px solid var(--sf-border);
+    font-size: 18px;
+}
+
+.cart-coupon-note,
+.checkout-coupon-help {
+    margin: 8px 0 0;
+}
+
+.text-discount {
+    color: #c2410c;
+}
+
 .about-page {
     display: grid;
     gap: 18px;
@@ -1999,6 +2072,8 @@ body.sf-store .flash {
 /* —— Thanh toán / địa chỉ giao hàng —— */
 .checkout-wrap {
     max-width: 720px;
+    display: grid;
+    gap: 16px;
 }
 
 .checkout-form-card {
@@ -2007,6 +2082,10 @@ body.sf-store .flash {
     border-radius: 14px;
     padding: 22px 22px 18px;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+}
+
+.checkout-coupon-card {
+    padding-bottom: 22px;
 }
 
 .checkout-form-title {
@@ -2152,6 +2231,27 @@ body.sf-store .flash {
     margin-top: 22px;
     padding-top: 18px;
     border-top: 1px solid var(--sf-border);
+}
+
+.checkout-coupon-box {
+    margin-bottom: 14px;
+    padding-top: 0;
+    border-top: none;
+}
+
+.checkout-coupon-head {
+    align-items: center;
+}
+
+.checkout-coupon-head span {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.checkout-coupon-head button,
+.cart-coupon-head button,
+.checkout-coupon-form button {
+    white-space: nowrap;
 }
 
 .checkout-summary-title {

@@ -1,101 +1,128 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout(~{::section}, 'Thanh toán · ComicStore')}">
+      th:replace="~{fragments/layout :: layout(~{::section}, 'Thanh toan · ComicStore')}">
 <section class="checkout-page">
-    <h1 class="page-title">Thanh toán</h1>
+    <h1 class="page-title">Thanh toan</h1>
 
     <div th:if="${#lists.isEmpty(items)}" class="empty">
-        Giỏ hàng đang trống. <a th:href="@{/home}">Mua sắm ngay</a>
+        Gio hang dang trong. <a th:href="@{/home}">Mua sam ngay</a>
     </div>
 
     <div class="checkout-wrap" th:if="${!#lists.isEmpty(items)}">
+        <div class="checkout-form-card checkout-coupon-card">
+            <h3 class="checkout-summary-title">Don hang</h3>
+
+            <div class="checkout-coupon-box">
+                <div class="checkout-coupon-head">
+                    <span>Ma giam gia</span>
+                    <form th:if="${pricing.hasDiscount()}" th:action="@{/cart/coupon/remove}" method="post">
+                        <input type="hidden" name="redirect" value="/checkout"/>
+                        <button type="submit">Go ma</button>
+                    </form>
+                </div>
+                <form class="checkout-coupon-form" th:action="@{/cart/coupon}" method="post">
+                    <input type="hidden" name="redirect" value="/checkout"/>
+                    <input type="text" name="code" placeholder="Nhap ma giam gia" th:value="${pricing.couponCode}"/>
+                    <button type="submit">Ap dung</button>
+                </form>
+                <p class="muted checkout-coupon-help">Ma mau: SAVE10, LESS30K, BOOK50K</p>
+            </div>
+
+            <div class="table checkout-mini-table">
+                <div class="row header">
+                    <div>Sach</div>
+                    <div class="right">SL</div>
+                    <div class="right">Thanh tien</div>
+                </div>
+                <div class="row" th:each="i : ${items}">
+                    <div th:text="${i.title}">Tieu de</div>
+                    <div class="right" th:text="${i.quantity}">1</div>
+                    <div class="right" th:text="${#numbers.formatDecimal(i.lineTotal(),1,'POINT',0,'COMMA')} + ' d'">0 d</div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div class="right">Tam tinh</div>
+                    <div class="right" th:text="${#numbers.formatDecimal(pricing.subtotal,1,'POINT',0,'COMMA')} + ' d'">0 d</div>
+                </div>
+                <div class="row" th:if="${pricing.hasDiscount()}">
+                    <div></div>
+                    <div class="right" th:text="${'Giam (' + pricing.couponCode + ')'}">Giam gia</div>
+                    <div class="right text-discount" th:text="'- ' + ${#numbers.formatDecimal(pricing.discountAmount,1,'POINT',0,'COMMA')} + ' d'">0 d</div>
+                </div>
+                <div class="row footer">
+                    <div></div>
+                    <div class="right strong">Tong tien</div>
+                    <div class="right strong" th:text="${#numbers.formatDecimal(pricing.total,1,'POINT',0,'COMMA')} + ' d'">0 d</div>
+                </div>
+            </div>
+        </div>
+
         <form th:action="@{/checkout}" method="post" th:object="${addressForm}" class="checkout-form-card">
-            <h2 class="checkout-form-title">Địa chỉ giao hàng</h2>
-            <p class="checkout-form-lead muted">Vui lòng điền thông tin nhận hàng. Dữ liệu được lưu kèm đơn hàng.</p>
+            <h2 class="checkout-form-title">Dia chi giao hang</h2>
+            <p class="checkout-form-lead muted">Vui long dien thong tin nhan hang. Du lieu duoc luu kem don hang.</p>
 
             <div class="checkout-field">
-                <label for="recipientName">Họ tên người nhận <span class="req">*</span></label>
-                <input id="recipientName" type="text" th:field="*{recipientName}" placeholder="Nguyễn Văn A" autocomplete="name"/>
+                <label for="recipientName">Ho ten nguoi nhan <span class="req">*</span></label>
+                <input id="recipientName" type="text" th:field="*{recipientName}" placeholder="Nguyen Van A" autocomplete="name"/>
                 <p class="field-error" th:if="${#fields.hasErrors('recipientName')}" th:errors="*{recipientName}"></p>
             </div>
 
             <div class="checkout-field">
-                <label for="phone">Số điện thoại <span class="req">*</span></label>
+                <label for="phone">So dien thoai <span class="req">*</span></label>
                 <input id="phone" type="tel" th:field="*{phone}" placeholder="09xxxxxxxx" autocomplete="tel"/>
                 <p class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
             </div>
 
             <div class="checkout-row-2">
                 <div class="checkout-field">
-                    <label for="province">Tỉnh / Thành phố <span class="req">*</span></label>
-                    <input id="province" type="text" th:field="*{province}" placeholder="VD: TP. Hồ Chí Minh"/>
+                    <label for="province">Tinh / Thanh pho <span class="req">*</span></label>
+                    <input id="province" type="text" th:field="*{province}" placeholder="VD: TP. Ho Chi Minh"/>
                     <p class="field-error" th:if="${#fields.hasErrors('province')}" th:errors="*{province}"></p>
                 </div>
                 <div class="checkout-field">
-                    <label for="district">Quận / Huyện <span class="req">*</span></label>
-                    <input id="district" type="text" th:field="*{district}" placeholder="VD: Quận 1"/>
+                    <label for="district">Quan / Huyen <span class="req">*</span></label>
+                    <input id="district" type="text" th:field="*{district}" placeholder="VD: Quan 1"/>
                     <p class="field-error" th:if="${#fields.hasErrors('district')}" th:errors="*{district}"></p>
                 </div>
             </div>
 
             <div class="checkout-field">
-                <label for="ward">Phường / Xã <span class="req">*</span></label>
-                <input id="ward" type="text" th:field="*{ward}" placeholder="VD: Phường Bến Nghé"/>
+                <label for="ward">Phuong / Xa <span class="req">*</span></label>
+                <input id="ward" type="text" th:field="*{ward}" placeholder="VD: Phuong Ben Nghe"/>
                 <p class="field-error" th:if="${#fields.hasErrors('ward')}" th:errors="*{ward}"></p>
             </div>
 
             <div class="checkout-field">
-                <label for="streetDetail">Số nhà, tên đường <span class="req">*</span></label>
-                <input id="streetDetail" type="text" th:field="*{streetDetail}" placeholder="Số nhà, tòa nhà, đường..." autocomplete="street-address"/>
+                <label for="streetDetail">So nha, ten duong <span class="req">*</span></label>
+                <input id="streetDetail" type="text" th:field="*{streetDetail}" placeholder="So nha, toa nha, duong..." autocomplete="street-address"/>
                 <p class="field-error" th:if="${#fields.hasErrors('streetDetail')}" th:errors="*{streetDetail}"></p>
             </div>
 
             <div class="checkout-field">
-                <label for="note">Ghi chú (tùy chọn)</label>
-                <textarea id="note" rows="3" th:field="*{note}" placeholder="Giao giờ hành chính, gọi trước khi giao..."></textarea>
+                <label for="note">Ghi chu (tuy chon)</label>
+                <textarea id="note" rows="3" th:field="*{note}" placeholder="Giao gio hanh chinh, goi truoc khi giao..."></textarea>
                 <p class="field-error" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></p>
             </div>
 
             <div class="checkout-payment">
-                <h3 class="checkout-payment-title">Phương thức thanh toán</h3>
+                <h3 class="checkout-payment-title">Phuong thuc thanh toan</h3>
                 <div class="checkout-payment-list">
                     <label class="checkout-payment-item">
                         <input type="radio" name="paymentMethod" value="MOMO"/>
                         <span class="checkout-payment-ico checkout-payment-ico-momo">MoMo</span>
-                        <span class="checkout-payment-name">Ví MoMo</span>
+                        <span class="checkout-payment-name">Vi MoMo</span>
                     </label>
                     <label class="checkout-payment-item">
                         <input type="radio" name="paymentMethod" value="COD" checked/>
                         <span class="checkout-payment-ico checkout-payment-ico-cash">💵</span>
-                        <span class="checkout-payment-name">Thanh toán bằng tiền mặt khi nhận hàng</span>
+                        <span class="checkout-payment-name">Thanh toan bang tien mat khi nhan hang</span>
                     </label>
                 </div>
             </div>
 
-            <div class="checkout-summary-inline">
-                <h3 class="checkout-summary-title">Đơn hàng</h3>
-                <div class="table checkout-mini-table">
-                    <div class="row header">
-                        <div>Sách</div>
-                        <div class="right">SL</div>
-                        <div class="right">Thành tiền</div>
-                    </div>
-                    <div class="row" th:each="i : ${items}">
-                        <div th:text="${i.title}">Tiêu đề</div>
-                        <div class="right" th:text="${i.quantity}">1</div>
-                        <div class="right" th:text="${#numbers.formatDecimal(i.lineTotal(),1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
-                    </div>
-                    <div class="row footer">
-                        <div></div>
-                        <div class="right strong">Tổng tiền</div>
-                        <div class="right strong" th:text="${#numbers.formatDecimal(total,1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="actions-bar checkout-actions">
-                <a th:href="@{/cart}">← Quay lại giỏ hàng</a>
-                <button class="primary btn-with-icon" type="submit"><span class="btn-ico">✅</span><span>Đặt hàng</span></button>
+                <a th:href="@{/cart}"><span>&larr;</span> Quay lai gio hang</a>
+                <button class="primary btn-with-icon" type="submit"><span class="btn-ico">✓</span><span>Dat hang</span></button>
             </div>
         </form>
     </div>

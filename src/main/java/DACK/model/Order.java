@@ -28,6 +28,18 @@ public class Order {
     @Column(name = "order_date", nullable = false, updatable = false)
     private Instant orderDate;
 
+    @Column(name = "subtotal_price", precision = 12, scale = 2)
+    private BigDecimal subtotalPrice = BigDecimal.ZERO;
+
+    @Column(name = "discount_amount", precision = 12, scale = 2)
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    @Column(name = "coupon_code", length = 64)
+    private String couponCode;
+
+    @Column(name = "coupon_description", length = 255)
+    private String couponDescription;
+
     @NotNull
     @Column(name = "total_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalPrice;
