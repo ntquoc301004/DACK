@@ -35,4 +35,13 @@ public class CheckoutAddressForm {
 
     @Size(max = 500)
     private String note;
+
+    private boolean giftBox;
+
+    private boolean giftRibbon;
+
+    private boolean greetingCard;
+
+    @Size(max = 300, message = "Loi nhan qua tang toi da 300 ky tu")
+    private String giftMessage;
 }

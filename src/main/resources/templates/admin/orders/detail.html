@@ -7,112 +7,122 @@
 
     <div class="admin-card admin-books-toolbar">
         <div>
-            <h2 class="admin-books-title" th:text="'Đơn hàng #' + ${order.id}">#1</h2>
+            <h2 class="admin-books-title" th:text="'Don hang #' + ${order.id}">#1</h2>
             <p class="admin-books-sub muted">
-                Khách: <strong th:text="${order.user.username}">user</strong>
-                · <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">—</span>
+                Khach: <strong th:text="${order.user.username}">user</strong>
+                · <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">-</span>
             </p>
         </div>
-        <a class="admin-btn-ghost" th:href="@{/admin/orders}">← Danh sách</a>
+        <a class="admin-btn-ghost" th:href="@{/admin/orders}"><- Danh sach</a>
     </div>
 
     <div class="admin-card admin-order-block">
-        <h3 class="admin-books-title admin-order-subtitle">Trạng thái đơn hàng</h3>
+        <h3 class="admin-books-title admin-order-subtitle">Trang thai don hang</h3>
         <p class="muted admin-order-note">
-            Hiện tại:
-            <strong th:if="${order.status.name() == 'PENDING'}">Chờ thanh toán</strong>
-            <strong th:if="${order.status.name() == 'PAID'}">Đã thanh toán — chờ duyệt / giao</strong>
-            <strong th:if="${order.status.name() == 'APPROVED'}">Đã duyệt — chuẩn bị giao hàng</strong>
-            <strong th:if="${order.status.name() == 'CANCELLED'}">Đã hủy</strong>
+            Hien tai:
+            <strong th:if="${order.status.name() == 'PENDING'}">Cho thanh toan</strong>
+            <strong th:if="${order.status.name() == 'PAID'}">Da thanh toan - cho duyet / giao</strong>
+            <strong th:if="${order.status.name() == 'APPROVED'}">Da duyet - chuan bi giao hang</strong>
+            <strong th:if="${order.status.name() == 'CANCELLED'}">Da huy</strong>
         </p>
 
         <div th:if="${order.status.name() == 'PENDING'}" class="admin-order-actions">
             <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
                 <input type="hidden" name="status" value="PAID"/>
-                <button type="submit" class="admin-btn-primary">Xác nhận đã thanh toán</button>
+                <button type="submit" class="admin-btn-primary">Xac nhan da thanh toan</button>
             </form>
             <form th:action="@{'/admin/orders/' + ${order.id} + '/cancel'}" method="post"
-                  onsubmit="return confirm('Hủy đơn chờ thanh toán? Tồn kho sẽ được hoàn theo từng dòng hàng.');">
-                <button type="submit" class="admin-btn-danger">Hủy đơn</button>
+                  onsubmit="return confirm('Huy don cho thanh toan? Ton kho se duoc hoan theo tung dong hang.');">
+                <button type="submit" class="admin-btn-danger">Huy don</button>
             </form>
         </div>
 
         <div th:if="${order.status.name() == 'PAID'}" class="admin-order-actions">
             <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
                 <input type="hidden" name="status" value="PENDING"/>
-                <button type="submit" class="admin-btn-ghost">Đánh dấu chưa thanh toán</button>
+                <button type="submit" class="admin-btn-ghost">Danh dau chua thanh toan</button>
             </form>
             <form th:action="@{'/admin/orders/' + ${order.id} + '/approve'}" method="post">
-                <button type="submit" class="admin-btn-primary">Duyệt đơn</button>
+                <button type="submit" class="admin-btn-primary">Duyet don</button>
             </form>
             <form th:action="@{'/admin/orders/' + ${order.id} + '/cancel'}" method="post"
-                  onsubmit="return confirm('Hủy đơn đã thanh toán? Tồn kho sẽ được hoàn theo từng dòng hàng.');">
-                <button type="submit" class="admin-btn-danger">Hủy đơn</button>
+                  onsubmit="return confirm('Huy don da thanh toan? Ton kho se duoc hoan theo tung dong hang.');">
+                <button type="submit" class="admin-btn-danger">Huy don</button>
             </form>
         </div>
 
         <div th:if="${order.status.name() == 'APPROVED'}" class="admin-order-actions">
             <form th:action="@{'/admin/orders/' + ${order.id} + '/cancel'}" method="post"
-                  onsubmit="return confirm('Hủy đơn đã duyệt? Tồn kho sẽ được hoàn theo từng dòng hàng.');">
-                <button type="submit" class="admin-btn-danger">Hủy đơn</button>
+                  onsubmit="return confirm('Huy don da duyet? Ton kho se duoc hoan theo tung dong hang.');">
+                <button type="submit" class="admin-btn-danger">Huy don</button>
             </form>
         </div>
 
         <p th:if="${order.status.name() == 'CANCELLED'}" class="muted admin-order-note-cancel">
-            Đơn đã hủy. Nếu đơn từng ở trạng thái đã thanh toán hoặc đã duyệt, số lượng sách đã được hoàn vào kho.
+            Don da huy. Neu don tung o trang thai da thanh toan hoac da duyet, so luong sach da duoc hoan vao kho.
         </p>
 
         <div th:if="${order.status.name() != 'CANCELLED'}">
-            <p class="muted admin-order-help">Hoặc chọn trạng thái (theo quy tắc cho phép):</p>
+            <p class="muted admin-order-help">Hoac chon trang thai (theo quy tac cho phep):</p>
             <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post" class="admin-inline-filter admin-inline-filter-row admin-order-status-form">
                 <select name="status" class="admin-filter-select admin-order-status-select">
                     <option th:each="s : ${allowedStatusChanges}" th:value="${s.name()}"
                             th:selected="${order.status.name() == s.name()}"
-                            th:text="${s.name() == 'PENDING'} ? 'Chờ thanh toán' : (${s.name() == 'PAID'} ? 'Đã thanh toán (chờ duyệt)' : (${s.name() == 'APPROVED'} ? 'Đã duyệt — giao hàng' : 'Đã hủy'))">—</option>
+                            th:text="${s.name() == 'PENDING'} ? 'Cho thanh toan' : (${s.name() == 'PAID'} ? 'Da thanh toan (cho duyet)' : (${s.name() == 'APPROVED'} ? 'Da duyet - giao hang' : 'Da huy'))">-</option>
                 </select>
-                <button type="submit" class="admin-btn-primary">Lưu trạng thái</button>
+                <button type="submit" class="admin-btn-primary">Luu trang thai</button>
             </form>
         </div>
     </div>
 
     <div class="admin-card admin-order-block" th:if="${order.shipRecipientName != null}">
-        <h3 class="admin-books-title admin-order-subtitle">Giao hàng</h3>
+        <h3 class="admin-books-title admin-order-subtitle">Giao hang</h3>
         <dl class="admin-order-ship-list">
-            <div><strong>Người nhận:</strong> <span th:text="${order.shipRecipientName}">—</span></div>
-            <div><strong>Điện thoại:</strong> <span th:text="${order.shipPhone}">—</span></div>
-            <div th:if="${order.shipStreetDetail}"><strong>Số nhà, đường:</strong> <span th:text="${order.shipStreetDetail}">—</span></div>
-            <div th:if="${order.shipWard}"><strong>Phường/Xã:</strong> <span th:text="${order.shipWard}">—</span></div>
-            <div th:if="${order.shipDistrict}"><strong>Quận/Huyện:</strong> <span th:text="${order.shipDistrict}">—</span></div>
-            <div th:if="${order.shipProvince}"><strong>Tỉnh/Thành phố:</strong> <span th:text="${order.shipProvince}">—</span></div>
-            <div th:if="${order.shipNote != null and !order.shipNote.isEmpty()}"><strong>Ghi chú:</strong> <span th:text="${order.shipNote}">—</span></div>
+            <div><strong>Nguoi nhan:</strong> <span th:text="${order.shipRecipientName}">-</span></div>
+            <div><strong>Dien thoai:</strong> <span th:text="${order.shipPhone}">-</span></div>
+            <div th:if="${order.shipStreetDetail}"><strong>So nha, duong:</strong> <span th:text="${order.shipStreetDetail}">-</span></div>
+            <div th:if="${order.shipWard}"><strong>Phuong/Xa:</strong> <span th:text="${order.shipWard}">-</span></div>
+            <div th:if="${order.shipDistrict}"><strong>Quan/Huyen:</strong> <span th:text="${order.shipDistrict}">-</span></div>
+            <div th:if="${order.shipProvince}"><strong>Tinh/Thanh pho:</strong> <span th:text="${order.shipProvince}">-</span></div>
+            <div th:if="${order.shipNote != null and !order.shipNote.isEmpty()}"><strong>Ghi chu:</strong> <span th:text="${order.shipNote}">-</span></div>
+            <div th:if="${order.giftBoxSelected or order.giftRibbonSelected or order.greetingCardSelected}">
+                <strong>Phu kien qua tang:</strong>
+                <span>
+                    <span th:if="${order.giftBoxSelected}">Hop qua </span>
+                    <span th:if="${order.giftRibbonSelected}">No trang tri </span>
+                    <span th:if="${order.greetingCardSelected}">Thiep chuc mung</span>
+                </span>
+            </div>
+            <div th:if="${order.giftMessage != null and !order.giftMessage.isEmpty()}"><strong>Loi nhan qua tang:</strong> <span th:text="${order.giftMessage}">-</span></div>
+            <div th:if="${order.giftAccessoryFee != null and order.giftAccessoryFee.signum() > 0}"><strong>Phi phu kien:</strong> <span th:text="${#numbers.formatDecimal(order.giftAccessoryFee, 1, 'POINT', 0, 'COMMA')} + ' d'">-</span></div>
         </dl>
     </div>
 
     <div class="admin-card admin-table-card">
-        <h3 class="admin-books-title admin-order-subtitle admin-order-lines-title">Dòng hàng</h3>
+        <h3 class="admin-books-title admin-order-subtitle admin-order-lines-title">Dong hang</h3>
         <div class="admin-table-wrap">
             <table class="admin-data-table">
                 <thead>
                 <tr>
-                    <th>Sách</th>
-                    <th class="num">Đơn giá</th>
+                    <th>Sach</th>
+                    <th class="num">Don gia</th>
                     <th class="num">SL</th>
-                    <th class="num">Thành tiền</th>
+                    <th class="num">Thanh tien</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="d : ${order.details}">
-                    <td th:text="${d.book.title}">Sách</td>
-                    <td class="num" th:text="${#numbers.formatDecimal(d.price, 1, 'POINT', 0, 'COMMA')} + ' đ'">0</td>
+                    <td th:text="${d.book.title}">Sach</td>
+                    <td class="num" th:text="${#numbers.formatDecimal(d.price, 1, 'POINT', 0, 'COMMA')} + ' d'">0</td>
                     <td class="num" th:text="${d.quantity}">1</td>
-                    <td class="num" th:text="${#numbers.formatDecimal(d.lineTotal(), 1, 'POINT', 0, 'COMMA')} + ' đ'">0</td>
+                    <td class="num" th:text="${#numbers.formatDecimal(d.lineTotal(), 1, 'POINT', 0, 'COMMA')} + ' d'">0</td>
                 </tr>
                 </tbody>
             </table>
         </div>
         <p class="admin-order-total">
-            Tổng cộng:
-            <span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+            Tong cong:
+            <span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 'POINT', 0, 'COMMA')} + ' d'">0 d</span>
         </p>
     </div>
 </main>

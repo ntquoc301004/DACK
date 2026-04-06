@@ -7,6 +7,7 @@ import DACK.model.OrderStatus;
 import DACK.repo.BookRepository;
 import DACK.repo.OrderRepository;
 import DACK.service.CurrentUserService;
+import DACK.service.GiftAccessoryService;
 import DACK.web.dto.CheckoutAddressForm;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ public class CheckoutController {
     private final CurrentUserService currentUserService;
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
+    private final GiftAccessoryService giftAccessoryService;
 
     @GetMapping("/checkout")
     public String checkout(HttpSession session, Model model) {
@@ -40,10 +42,9 @@ public class CheckoutController {
         form.setWard(user.getWard() != null ? user.getWard() : "");
         form.setStreetDetail(user.getStreetDetail() != null ? user.getStreetDetail() : "");
         form.setNote("");
+        form.setGiftMessage("");
 
-        model.addAttribute("addressForm", form);
-        model.addAttribute("items", cartService.items(session));
-        model.addAttribute("total", cartService.total(session));
+        populateCheckoutModel(model, session, form);
         return "checkout/index";
     }
 
@@ -57,13 +58,12 @@ public class CheckoutController {
     ) {
         var items = cartService.items(session);
         if (items.isEmpty()) {
-            redirectAttributes.addFlashAttribute("flash", "Giỏ hàng đang trống");
+            redirectAttributes.addFlashAttribute("flash", "Gio hang dang trong");
             return "redirect:/cart";
         }
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("items", items);
-            model.addAttribute("total", cartService.total(session));
+            populateCheckoutModel(model, session, addressForm);
             return "checkout/index";
         }
 
@@ -77,15 +77,15 @@ public class CheckoutController {
         order.setShipStreetDetail(addressForm.getStreetDetail().trim());
         order.setShipNote(addressForm.getNote() != null && !addressForm.getNote().isBlank()
                 ? addressForm.getNote().trim() : null);
-        // Đơn mới: chưa thanh toán; tồn kho đã trừ để giữ chỗ. Admin xác nhận PAID khi đã thu tiền.
+        giftAccessoryService.applyToOrder(order, addressForm);
         order.setStatus(OrderStatus.PENDING);
 
         BigDecimal total = BigDecimal.ZERO;
         for (var item : items) {
             var book = bookRepository.findById(item.getBookId())
-                    .orElseThrow(() -> new IllegalStateException("Không tìm thấy sách: " + item.getBookId()));
+                    .orElseThrow(() -> new IllegalStateException("Khong tim thay sach: " + item.getBookId()));
             if (book.getQuantity() == null || book.getQuantity() < item.getQuantity()) {
-                redirectAttributes.addFlashAttribute("flash", "Số lượng tồn kho không đủ cho sách: " + book.getTitle());
+                redirectAttributes.addFlashAttribute("flash", "So luong ton kho khong du cho sach: " + book.getTitle());
                 return "redirect:/cart";
             }
 
@@ -101,13 +101,27 @@ public class CheckoutController {
             book.setQuantity(book.getQuantity() - item.getQuantity());
             bookRepository.save(book);
         }
+
+        total = total.add(order.getGiftAccessoryFee() == null ? BigDecimal.ZERO : order.getGiftAccessoryFee());
         order.setTotalPrice(total);
 
         orderRepository.save(order);
         cartService.clear(session);
 
-        redirectAttributes.addFlashAttribute("flash", "Đặt hàng thành công");
+        redirectAttributes.addFlashAttribute("flash", "Dat hang thanh cong");
         return "redirect:/orders";
     }
-}
 
+    private void populateCheckoutModel(Model model, HttpSession session, CheckoutAddressForm form) {
+        BigDecimal subtotal = cartService.total(session);
+        BigDecimal giftFee = giftAccessoryService.calculateFee(form);
+        model.addAttribute("addressForm", form);
+        model.addAttribute("items", cartService.items(session));
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("giftAccessoryFee", giftFee);
+        model.addAttribute("giftBoxPrice", GiftAccessoryService.GIFT_BOX_PRICE);
+        model.addAttribute("giftRibbonPrice", GiftAccessoryService.GIFT_RIBBON_PRICE);
+        model.addAttribute("greetingCardPrice", GiftAccessoryService.GREETING_CARD_PRICE);
+        model.addAttribute("total", subtotal.add(giftFee));
+    }
+}

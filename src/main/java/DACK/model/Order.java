@@ -58,6 +58,21 @@ public class Order {
     @Column(name = "ship_note", length = 500)
     private String shipNote;
 
+    @Column(name = "gift_accessory_fee", precision = 12, scale = 2)
+    private BigDecimal giftAccessoryFee;
+
+    @Column(name = "gift_box_selected", nullable = false)
+    private boolean giftBoxSelected;
+
+    @Column(name = "gift_ribbon_selected", nullable = false)
+    private boolean giftRibbonSelected;
+
+    @Column(name = "greeting_card_selected", nullable = false)
+    private boolean greetingCardSelected;
+
+    @Column(name = "gift_message", length = 300)
+    private String giftMessage;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> details = new ArrayList<>();
 }
