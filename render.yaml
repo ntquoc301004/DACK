@@ -1,0 +1,47 @@
+# Blueprint Render: Web (Dockerfile) + MySQL private (image mysql:8.4).
+# Lưu ý: private service không có gói free — cần Starter trở lên cho MySQL.
+# Dashboard: New → Blueprint → chọn repo có file này → Apply (nhập MYSQL_ROOT_PASSWORD khi được hỏi).
+
+services:
+  - type: pserv
+    name: dack-mysql
+    runtime: image
+    region: oregon
+    plan: starter
+    image:
+      url: docker.io/library/mysql:8.4
+    envVars:
+      - key: MYSQL_DATABASE
+        value: db_j2ee_dack
+      - key: MYSQL_ROOT_PASSWORD
+        sync: false
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+
+  - type: web
+    name: dack-bookstore
+    runtime: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: docker
+      - key: MYSQL_HOST
+        fromService:
+          name: dack-mysql
+          type: pserv
+          property: host
+      - key: MYSQL_DATABASE
+        value: db_j2ee_dack
+      - key: SPRING_DATASOURCE_USERNAME
+        value: root
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromService:
+          name: dack-mysql
+          type: pserv
+          envVarKey: MYSQL_ROOT_PASSWORD
