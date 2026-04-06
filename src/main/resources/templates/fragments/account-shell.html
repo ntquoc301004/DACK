@@ -15,6 +15,8 @@
                    th:classappend="${activeSection == 'orders'} ? ' acc-nav-active' : ''"><i class="fa-regular fa-clipboard"></i> Đơn hàng</a>
                 <a th:href="@{/cart}"
                    th:classappend="${activeSection == 'cart'} ? ' acc-nav-active' : ''"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a>
+                <a th:href="@{/account/wishlist}"
+                   th:classappend="${activeSection == 'wishlist'} ? ' acc-nav-active' : ''"><i class="fa-solid fa-heart"></i> Yêu thích</a>
                 <a th:href="@{/account/profile}"
                    th:classappend="${activeSection == 'profile'} ? ' acc-nav-active' : ''"><i class="fa-regular fa-user"></i> Thông tin tài khoản</a>
             </nav>

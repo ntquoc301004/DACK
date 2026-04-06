@@ -101,6 +101,7 @@ public class CheckoutController {
             book.setQuantity(book.getQuantity() - item.getQuantity());
             bookRepository.save(book);
         }
+
         order.setTotalPrice(total);
 
         orderRepository.save(order);

@@ -3,6 +3,8 @@ package DACK.web;
 import DACK.model.OrderStatuses;
 import DACK.repo.BookRepository;
 import DACK.repo.OrderDetailRepository;
+import DACK.service.CurrentUserService;
+import DACK.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class BookController {
     private final BookRepository bookRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final CurrentUserService currentUserService;
+    private final FavoriteService favoriteService;
 
     @GetMapping("/books/{id}")
     public String detail(@PathVariable Long id, Model model) {
@@ -23,6 +27,8 @@ public class BookController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sách"));
         model.addAttribute("book", book);
         model.addAttribute("soldCount", orderDetailRepository.sumQuantityByBookIdAndOrderStatusIn(id, OrderStatuses.REVENUE_AND_SOLD));
+        var currentUser = currentUserService.currentUserOrNull();
+        model.addAttribute("isFavorite", currentUser != null && favoriteService.isFavorite(currentUser, id));
         return "books/detail";
     }
 }
