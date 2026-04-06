@@ -26,9 +26,10 @@ public class CartController {
      */
     @GetMapping("/cart")
     public String cart(HttpSession session, Model model) {
-        // Lấy danh sách sản phẩm và tổng tiền từ Service rồi đẩy vào Model để hiển thị ở giao diện (Thymeleaf)
-        model.addAttribute("items", cartService.items(session));
+        var items = cartService.items(session);
+        model.addAttribute("items", items);
         model.addAttribute("total", cartService.total(session));
+        model.addAttribute("cartHasIssues", cartService.hasStockIssues(session));
         return "cart/index"; // Trả về file HTML tại src/main/resources/templates/cart/index.html
     }
 

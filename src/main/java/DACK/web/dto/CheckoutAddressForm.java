@@ -1,6 +1,8 @@
 package DACK.web.dto;
 
+import DACK.model.PaymentMethod;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +14,9 @@ public class CheckoutAddressForm {
     @NotBlank(message = "Vui lòng nhập họ tên người nhận")
     @Size(max = 120)
     private String recipientName;
+
+    @NotNull(message = "Vui lòng chọn phương thức thanh toán")
+    private PaymentMethod paymentMethod = PaymentMethod.COD;
 
     @NotBlank(message = "Vui lòng nhập số điện thoại")
     @Size(max = 20)

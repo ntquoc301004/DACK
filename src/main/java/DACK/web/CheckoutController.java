@@ -4,6 +4,7 @@ import DACK.cart.CartService;
 import DACK.model.Order;
 import DACK.model.OrderDetail;
 import DACK.model.OrderStatus;
+import DACK.model.PaymentMethod;
 import DACK.repo.BookRepository;
 import DACK.repo.OrderRepository;
 import DACK.service.CurrentUserService;
@@ -40,10 +41,13 @@ public class CheckoutController {
         form.setWard(user.getWard() != null ? user.getWard() : "");
         form.setStreetDetail(user.getStreetDetail() != null ? user.getStreetDetail() : "");
         form.setNote("");
+        form.setPaymentMethod(PaymentMethod.COD);
 
+        var items = cartService.items(session);
         model.addAttribute("addressForm", form);
-        model.addAttribute("items", cartService.items(session));
+        model.addAttribute("items", items);
         model.addAttribute("total", cartService.total(session));
+        model.addAttribute("cartHasIssues", cartService.hasStockIssues(session));
         return "checkout/index";
     }
 
@@ -64,6 +68,7 @@ public class CheckoutController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("items", items);
             model.addAttribute("total", cartService.total(session));
+            model.addAttribute("cartHasIssues", cartService.hasStockIssues(session));
             return "checkout/index";
         }
 
@@ -77,6 +82,7 @@ public class CheckoutController {
         order.setShipStreetDetail(addressForm.getStreetDetail().trim());
         order.setShipNote(addressForm.getNote() != null && !addressForm.getNote().isBlank()
                 ? addressForm.getNote().trim() : null);
+        order.setPaymentMethod(addressForm.getPaymentMethod());
         // Đơn mới: chưa thanh toán; tồn kho đã trừ để giữ chỗ. Admin xác nhận PAID khi đã thu tiền.
         order.setStatus(OrderStatus.PENDING);
 

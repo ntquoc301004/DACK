@@ -30,6 +30,10 @@ public class CartService {
                 .toList();
     }
 
+    public boolean hasStockIssues(HttpSession session) {
+        return items(session).stream().anyMatch(CartItem::isQuantityExceeded);
+    }
+
     public int countItems(HttpSession session) {
         return items(session).stream().mapToInt(CartItem::getQuantity).sum();
     }
@@ -107,13 +111,16 @@ public class CartService {
     }
 
     private CartItem toCartItem(UserCartItem item) {
+        var book = item.getBook();
+        int availableStock = book.getQuantity() != null ? book.getQuantity() : 0;
         return new CartItem(
-                item.getBook().getId(),
-                item.getBook().getTitle(),
-                item.getBook().getAuthor(),
-                item.getBook().getImage(),
-                item.getBook().getPrice(),
-                item.getQuantity()
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getImage(),
+                book.getPrice(),
+                item.getQuantity(),
+                availableStock
         );
     }
 }

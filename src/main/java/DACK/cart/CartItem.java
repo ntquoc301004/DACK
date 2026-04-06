@@ -16,9 +16,18 @@ public class CartItem {
     private String image;
     private BigDecimal unitPrice;
     private int quantity;
+    private int availableStock;
 
     public BigDecimal lineTotal() {
         return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
+
+    public boolean isOutOfStock() {
+        return availableStock <= 0;
+    }
+
+    public boolean isQuantityExceeded() {
+        return quantity > availableStock;
     }
 }
 

@@ -8,6 +8,10 @@
         Giỏ hàng đang trống. <a th:href="@{/home}">Tiếp tục mua sắm</a>
     </div>
 
+    <div th:if="${cartHasIssues}" class="alert warning">
+        Một hoặc nhiều sản phẩm trong giỏ có số lượng vượt quá tồn kho hiện tại. Vui lòng cập nhật hoặc xóa sản phẩm trước khi thanh toán.
+    </div>
+
     <div th:if="${!#lists.isEmpty(items)}" class="table cart-table">
         <div class="row header">
             <div>Sách</div>
@@ -17,9 +21,17 @@
             <div></div>
         </div>
         <div class="row" th:each="i : ${items}">
-            <div>
-                <div class="strong" th:text="${i.title}">Tiêu đề</div>
-                <div class="muted" th:text="${i.author}">Tác giả</div>
+            <div class="cart-item-cell">
+                <a th:href="@{/books/{id}(id=${i.bookId})}" class="cart-item-link">
+                    <img th:if="${i.image}" th:src="@{${i.image}}" alt="Ảnh sách" class="cart-item-thumb"/>
+                    <div>
+                        <div class="strong" th:text="${i.title}">Tiêu đề</div>
+                        <div class="muted" th:text="${i.author}">Tác giả</div>
+                    </div>
+                </a>
+                <div class="cart-item-stock" th:if="${i.outOfStock}">Hết hàng</div>
+                <div class="cart-item-stock muted" th:if="${!i.outOfStock}">Còn <span th:text="${i.availableStock}">0</span> sản phẩm trong kho</div>
+                <div class="cart-item-stock warning" th:if="${i.quantity > i.availableStock}">Số lượng trong giỏ vượt quá kho</div>
             </div>
             <div class="right" th:text="${#numbers.formatDecimal(i.unitPrice,1,'POINT',0,'COMMA')} + ' đ'">0 đ</div>
             <div class="right">
