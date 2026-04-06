@@ -14,6 +14,7 @@
 	<name/>
 	<description/>
 	<url/>
+	<packaging>jar</packaging>
 	<licenses>
 		<license/>
 	</licenses>
